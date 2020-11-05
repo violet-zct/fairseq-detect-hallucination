@@ -6,11 +6,8 @@ Chunting Zhou, Jiatao Gu, Mona Diab, Paco Guzman, Luke Zettlemoyer, Marjan Ghazv
 Under review for ICLR 2021
 ```
 <br>
-<br>
 
 ![Model](figs/model_finetune-1.png)
-
-<br>
 <br>
 
 ## Requirement
@@ -33,53 +30,60 @@ Since it involves the data from LDC, we could not publish it.
 
 We have two benchmark datasets for MT and summarization (XSum) respectively in this repo (`./eval_data/`). 
 #### Machine Translation (`./eval_data/mt/`): 
-We train two MT systems (standard Transformer and finetuned MBART) on the simulated low-resource (patent domain) training data, and evaluate on the patent domain. 
+We train two MT systems (standard Transformer and finetuned [MBART](https://github.com/pytorch/fairseq/tree/master/examples/mbart)) on the simulated low-resource (patent domain) training data, and evaluate on the patent domain. 
 We ask bilingual speakers to evaluate if machine translations contain hallucinations at token-level on 150 sentences from the patent test set.
 Under `./eval_data/mt/`, `*source` are raw source sentences, `*target` are model outputs, `*ref` are references, `*label` are annotated labels of `*target`.
 `1` indicates hallucinated words and `0` indicates faithful translation words.
 - `./eval_data/mt/trans2s.*` are annotations for standard Transformer outputs.
 - `./eval_data/mt/mbart.*` are annotations for finetuned MBART outputs.
 #### XSum
-We processed the annotations released from [google](https://github.com/google-research-datasets/xsum_hallucination_annotations) by aggregating the labels for each word from 3 annotations with majority voting.
+We processed the annotations released from [google](https://github.com/google-research-datasets/xsum_hallucination_annotations) by aggregating the labels for each word from 3 annotators with majority voting.
 The aggregated results for four models (BERTSeq2Seq, Pointer-generator, Topic-aware Convolutional Network and standard Transformer Seq2Seq) are under `./eval_data/xsum/`.
 
 ## Create Synthetic Data
 To train a hallucination prediction model on your own bi-text dataset, the first step is creating the synthetic labeled data.
 This is decomposed into the following two sub-steps.
-- Generate synthetic target data with BART 
+- **Generate synthetic target data with BART**
 
-You can tune the hyperparameters for generating noised data at the top of `./util_scripts/run_gen_synthetic_data_with_bart.sh`, then run the following command.
-The set of noise hyperparameters will be used to name the output, namely `config`.
+  You can tune the hyperparameters for generating noised data at the top of `./util_scripts/run_gen_synthetic_data_with_bart.sh`, then run the following command.
+  The set of noise hyperparameters will be used to name the output, namely `config`.
 
-Please first download the BART (for English, [here](https://github.com/pytorch/fairseq/tree/master/examples/bart)) or MBART (for other languages, [here](https://github.com/pytorch/fairseq/tree/master/examples/mbart)) model
+  Please first download the BART (for English, [here](https://github.com/pytorch/fairseq/tree/master/examples/bart)) or MBART (for other languages, [here](https://github.com/pytorch/fairseq/tree/master/examples/mbart)) model
 and then specify the path to model and bpe dictionary in `Line 33-45` of `./util_scripts/gen_bart_batch.py`.
-Then run the following command:
-```commandline
-bash ./util_scripts/run_gen_synthetic_data_with_bart.sh path/to/the/target/file
-```
-
-
-After this, a new directory `bart_gen` is created under the directory of your input and you will see the output under `bart_gen`.
+  Then run the following command:
+  ```commandline
+  bash ./util_scripts/run_gen_synthetic_data_with_bart.sh path/to/the/target/file path/to/the/valid/file
+  ```
+  e.g.,
+  ```commandline
+  bash util_scripts/run_gen_synthetic_data_with_bart.sh toy_data/train.en toy_data/valid.en
+  ```
+  With the default setting, the noise `config=mask_0.0_0.6_random_0.0_0.3_insert_0.2_wholeword_0`.
+  After this, a new directory `bart_gen` is created under the directory of your input and you will see the output under `bart_gen`.
  
-- Create pseudo labels and binarize datasets
+- **Create pseudo labels and binarize datasets**
 
-The examples scripts `./util_scripts/make_synthetic_data_mt.sh` and `./util_scripts/make_synthetic_data_xsum.sh` 
+  The examples scripts `./util_scripts/make_synthetic_data_mt.sh` and `./util_scripts/make_synthetic_data_xsum.sh` 
 are used for pseudo label creation and dataset binarization for machine translation and summarization respectively.
 
-You need to download the model you will finetune on later and the corresponding dictionaries prior to the following steps.
+  You need to download the model you will finetune on later and the corresponding dictionaries prior to the following steps.
 To predict hallucination for a cross-lingual conditional sequence generation task, e.g. MT, you could use [XLM-Roberta](https://github.com/pytorch/fairseq/tree/master/examples/xlmr);
 to predict hallucination for a monolingual conditional sequence generation task, e.g. summarization, you could use [Roberta](https://github.com/pytorch/fairseq/tree/master/examples/roberta).
 
-These models also come along with the dictionaries and the subword models (sentencepiece for XLM-R, and gpt-2 bpe for Roberata).
+  These models also come along with the dictionaries and the subword models (sentencepiece for XLM-R, and gpt-2 bpe for Roberata).
 Following is an example processing script when finetuning XLM-R model:
-```commandline
-bash ./util_scripts/make_synthetic_data_mt.sh config directory/of/target/data path/to/sentencepiece/model path/to/dictionary 
-```
-Similarly, you can run for Roberta model with example script `./util_scripts/make_synthetic_data_xsum.sh`. Please see the scripts for more details.
+  ```commandline
+  bash ./util_scripts/make_synthetic_data_mt.sh config directory/of/target/data path/to/sentencepiece/model path/to/dictionary 
+  ```
+  e.g.,
+  ```commandline
+  bash util_scripts/make_synthetic_data_mt.sh mask_0.0_0.6_random_0.0_0.3_insert_0.2_wholeword_0 toy_data path/to/xlmr.large/sentencepiece.bpe.model path/to/xlmr.large/dict.txt
+  ```
+  Similarly, you can run for Roberta model with example script `./util_scripts/make_synthetic_data_xsum.sh`. Please see the scripts for more details.
 
-After this step, you will see the binarized datasets with source, target, reference and labels under a new directory `data` under `directory/of/target/data`.
+  After this step, you will see the binarized datasets with source, target, reference and labels under a new directory `data` under `directory/of/target/data`.
 
-## Training Hallucination Detection Model
+## Train a Hallucination Detection Model
 You can finetune XLM-R or Roberta with the above created binarized data.
 We provide the batch scripts to run this for MT and abstractive summarization respectively.
 ```commandline
@@ -95,9 +99,9 @@ You may want to tune the hyperparameters inside the scripts for better performan
 We provide the evaluation scripts for the benchmark datasets under `./eval_data`.
 To evaluate on these datasets, we provide python scripts `./util_scripts/eval_predict_hallucination_mt.py` and
 `./util_scripts/eval_predict_hallucination_xsum.py` for MT and summarization respectively (they only differ slightly).
-First, you need to specify the path to the trained detection model and output path between `Line 13-15`, then run them.
+First, you need to specify the path to the saved detection model directory and training data path in `Line 12-13`, then run them.
 
 ## Prediction
 To simply use the trained model for hallucination prediction for your own input, we provide an example script `./util_scripts/predict_hallucination_mt.py`
 that predicts labels for a hypothesis file conditioned on its source file.
-Again, please specify the path to your input files, the trained model and the output directory in `Line 12-23`, and then run it.
+Again, please specify the path to your input files, the trained model, the training data and the output directory in `Line 12-23`, and then run it.

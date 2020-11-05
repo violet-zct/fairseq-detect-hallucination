@@ -193,7 +193,7 @@ class BARTHubInterface(nn.Module):
     def sample_noise(self):
         pass
 
-    def encode(self, sentence: str, *addl_sentences, no_separator=True, high_noise=-1) -> (torch.LongTensor, torch.LongTensor):
+    def encode(self, sentence: str, *addl_sentences, no_separator=True) -> (torch.LongTensor, torch.LongTensor):
         """
         BPE-encode a sentence (or multiple sentences).
 
@@ -274,13 +274,9 @@ class BARTHubInterface(nn.Module):
         return sample
 
     def sample(self, sentences: List[str], beam: int = 1, verbose: bool = False, **kwargs) -> (List[str], List[str]):
-        high_noise = 1 if np.random.uniform(high=1) > 0.5 else 0
-        if self.noise_params["mid_mask_prob"] > 0 and not high_noise:
-            kwargs["lenpen"] = 1
-        else:
-            kwargs["lenpen"] = 3
+        kwargs["lenpen"] = 3
 
-        pair_input = [self.encode(sentence, high_noise=high_noise) for sentence in sentences]
+        pair_input = [self.encode(sentence) for sentence in sentences]
         intact_input = [inpt[0] for inpt in pair_input]
         input = [inpt[1] for inpt in pair_input]
         if verbose:

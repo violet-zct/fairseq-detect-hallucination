@@ -40,7 +40,7 @@ for split in valid train; do
   fname=${input_dir}/${split}.${suffix}
   # linux grep may have problems in certain cases, we use the following grep.py to grep the synthetic target and reference from the log file
   # Usage: grep.py input output1 output2
-  python pretrain_scripts/grep.py ${fname} ${fname}.hypo ${fname}.ref
+  python util_scripts/grep.py ${fname} ${fname}.hypo ${fname}.ref
 
   # After the following executions, the bpes (used for final finetuning) of synthetic target and reference target will be generated,
   # and the pseudo labels will be created on synthetic target with edit-distance between them.
@@ -70,7 +70,7 @@ optdir=${optdir}/bin
 
 for split in ${SRC} ${TGT} ref; do
 fairseq-preprocess --only-source --trainpref ${inputdir}/train.${split} --validpref ${inputdir}/valid.${split} \
---destdir ${optdir}/${split} --workers 30 --srcdict ${dict_path}/dict.txt
+--destdir ${optdir}/${split} --workers 30 --srcdict ${dict_path}
 done
 
 # binarize the label set

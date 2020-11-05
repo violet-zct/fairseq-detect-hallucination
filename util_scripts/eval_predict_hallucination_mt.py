@@ -9,9 +9,8 @@ import torch
 test_dirs = ["evals/mt", "evals/mt"]
 test_prefix = ["trans2s", "mbart"]
 
-# change to your path to the hallucination prediction model
-modelroot = "checkpoints_dir"
-models = ["finetune_mt"] # directory name of saved model, checkpoint under modelroot/model
+models = ["path/to/the/saved/model"]  # you can test multiple models
+datapath = "path/to/train/data"
 opt_dir = "output_logs"
 if not os.path.exists(opt_dir):
     os.mkdir(opt_dir)
@@ -64,9 +63,9 @@ for model in models:
     print(model)
 
     xlmr = XLMRModel.from_pretrained(
-        '{}/{}/'.format(modelroot, model),
+        model,
         checkpoint_file='checkpoint.pt',
-        data_name_or_path=os.path.join(modelroot, model)
+        data_name_or_path=datapath
     )
 
     raw = True

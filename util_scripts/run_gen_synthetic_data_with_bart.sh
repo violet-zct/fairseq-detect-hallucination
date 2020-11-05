@@ -41,7 +41,7 @@ python -u util_scripts/gen_bart_batch.py \
   --mask_whole_word ${mask_whole_word}
 
 # If you have validation data, fill the following input path as well.
-valid_input=
+valid_input=${2}
 valid_output=${opt_dir}/valid.${config}
 
 python -u util_scripts/gen_bart_batch.py \

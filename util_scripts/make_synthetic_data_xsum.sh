@@ -21,7 +21,7 @@ rootdir=${2}
 input_dir="${rootdir}/bart_gen"
 opt_root="${rootdir}/data"
 
-# Path to the GPT2 bpe (used by Roberta)
+# Path to parent directory of the GPT2 bpe (encoder.json, used by Roberta)
 bpe_path=${3}
 # Path to the dictionary used by the pretrained model (Roberta) for binarized data creation for finetuning
 dict_path=${4}
@@ -37,7 +37,7 @@ for split in valid train; do
   fname=${input_dir}/${split}.${suffix}
   # linux grep may have problems in certain cases, we use the following grep.py to grep the synthetic target and reference from the log file
   # Usage: grep.py input output1 output2
-  python pretrain_scripts/grep.py ${fname} ${fname}.hypo ${fname}.ref
+  python util_scripts/grep.py ${fname} ${fname}.hypo ${fname}.ref
 
   # After the following executions, the bpes (used for final finetuning) of synthetic target and reference target will be generated,
   # and the pseudo labels will be created on synthetic target with edit-distance between them.
@@ -47,11 +47,11 @@ for split in valid train; do
   python -u util_scripts/create_label_with_edit_distance.py ${fname}.ref.bpe ${fname}.hypo.bpe ${optdir}/${split}.label
 
   # convert bpe to vocab id for data binarization
-  bash pretrain_scripts/preprocess/gpt2_encode_ids.sh ${fname}.ref.bpe ${optdir}/${split}.ref ${bpe_path}
-  bash pretrain_scripts/preprocess/gpt2_encode_ids.sh ${fname}.hypo.bpe ${optdir}/${split}.${TGT} ${bpe_path}
+  bash util_scripts/preprocess/gpt2_encode_ids.sh ${fname}.ref.bpe ${optdir}/${split}.ref ${bpe_path}
+  bash util_scripts/preprocess/gpt2_encode_ids.sh ${fname}.hypo.bpe ${optdir}/${split}.${TGT} ${bpe_path}
 
   if [ ! -f ${rootdir}/${split}.${SRC}.ids ]; then
-    bash pretrain_scripts/preprocess/gpt2_encode_raw_to_ids.sh ${rootdir}/${split}.${SRC} ${rootdir}/${split}.${SRC}.ids ${bpe_path}
+    bash util_scripts/preprocess/gpt2_encode_raw_to_ids.sh ${rootdir}/${split}.${SRC} ${rootdir}/${split}.${SRC}.ids ${bpe_path}
   fi
 
   if [ ${split} = "train" ]; then
@@ -60,8 +60,8 @@ for split in valid train; do
     cp ${rootdir}/${split}.${SRC}.ids ${optdir}/${split}.${SRC}.original
   fi
 
-  # truncate document since the maximum position allowed by Roberta is 512
-  python pretrain_scripts/preprocess/truncate_sentence_xsum.py ${optdir}/${split}.${SRC}.original \
+  # truncate document since the maximum position allowed by Roberta is 512 (this might be an issue, as we observe the truncation length is relatively high)
+  python util_scripts/preprocess/truncate_sentence_xsum.py ${optdir}/${split}.${SRC}.original \
     ${optdir}/${split}.${TGT} ${optdir}/${split}.ref ${optdir}/${split}.${SRC}
 done
 
@@ -71,7 +71,7 @@ optdir=${optdir}/bin
 
 for split in ${SRC} ${TGT} ref; do
   fairseq-preprocess --only-source --trainpref ${inputdir}/train.${split} --validpref ${inputdir}/valid.${split} \
-  --destdir ${optdir}/${split} --workers 30 --srcdict ${dict_path}/dict.txt
+  --destdir ${optdir}/${split} --workers 30 --srcdict ${dict_path}
 done
 
 # binarize the label set

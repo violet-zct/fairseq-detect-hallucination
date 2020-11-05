@@ -9,9 +9,8 @@ import torch
 test_dirs = ["eval_data/xsum/PtGen", "eval_data/xsum/TConvS2S", "eval_data/xsum/TranS2S", "eval_data/xsum/BERTS2S"]
 test_prefix = ["PtGen", "TConvS2S", "TranS2S", "BERTS2S"]
 
-# change to your path to the hallucination prediction model
-modelroot = "checkpoints_dir"
-models = ["finetune_xsum"]  # directory name of saved model, checkpoint under modelroot/model
+models = ["path/to/the/saved/model"]  # you can test multiple models
+datapath = "path/to/train/data"
 opt_dir = "output_logs"
 if not os.path.exists(opt_dir):
     os.mkdir(opt_dir)
@@ -67,9 +66,9 @@ for model in models:
     print(model)
 
     roberta = RobertaModel.from_pretrained(
-        '{}/{}/'.format(modelroot, model),
-        checkpoint_file='checpoint.pt',
-        data_name_or_path=os.path.join(modelroot, model)
+        model,
+        checkpoint_file='checkpoint.pt',
+        data_name_or_path=datapath
     )
     raw = True
     print("Loaded the model!")

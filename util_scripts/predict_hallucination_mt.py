@@ -13,14 +13,21 @@ raw_dir = "input_dir"
 source_fname = "source"  # file name of the source input
 hypo_fname = "hypo"  # file name that you want to predict if they contain hallucinations based on the source
 
-modelroot = "checkpoints_dir"
-model = "finetune_mt"  # directory name of saved model, checkpoint under modelroot/model
-
+model_path = "path/to/the/saved/model"
+datapath = "path/to/train/data"
 opt_dir = "outputs"
 if not os.path.exists(opt_dir):
     os.mkdir(opt_dir)
 print("opt dir: " + opt_dir)
 flog = open(os.path.join(opt_dir, "hal_pred.log"), "w", encoding="utf-8")
+log_path = os.path.join(opt_dir, "gen.log")
+
+# read input in
+data = []
+with open(os.path.join(raw_dir, source_fname), encoding='utf-8') as fin1, \
+        open(os.path.join(raw_dir, hypo_fname), encoding='utf-8') as fin2:
+    for l1, l2 in zip(fin1, fin2):
+        data.append((l1.strip(), l2.strip()))
 
 
 def make_batches(total, bsz):
@@ -30,11 +37,11 @@ def make_batches(total, bsz):
     return batches
 
 
-print(model)
+print(model_path)
 xlmr = XLMRModel.from_pretrained(
-    '{}/{}/'.format(modelroot, model),
+    model_path,
     checkpoint_file='checkpoint.pt',
-    data_name_or_path=os.path.join(modelroot, model)
+    datapath=datapath
 )
 
 print("Loaded the model!")
@@ -44,14 +51,6 @@ xlmr.eval()
 max_positions = xlmr.model.max_positions()
 use_ref = 0
 print(f"use ref = {use_ref}")
-
-
-def read_parallel_data(f1, f2):
-    data = []
-    with open(f1, encoding='utf-8') as fin1, open(f2, encoding='utf-8') as fin2:
-        for l1, l2 in zip(fin1, fin2):
-            data.append((l1.strip(), l2.strip()))
-    return data
 
 
 def convert_spm_labels_to_raw_labels(sent_bpe, sent_detoks, bpe_labels):
@@ -86,10 +85,6 @@ def convert_spm_labels_to_raw_labels(sent_bpe, sent_detoks, bpe_labels):
         return [1] * len(sent_detoks), True
     return detok_labels, False
 
-
-log_path = os.path.join(opt_dir, "gen.log")
-# read input in
-data = read_parallel_data(os.path.join(raw_dir, source_fname), os.path.join(raw_dir, hypo_fname))
 
 bsz = 300
 count = 0
