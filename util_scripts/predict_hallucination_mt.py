@@ -41,7 +41,7 @@ print(model_path)
 xlmr = XLMRModel.from_pretrained(
     model_path,
     checkpoint_file='checkpoint.pt',
-    datapath=datapath
+    data_name_or_path=datapath
 )
 
 print("Loaded the model!")

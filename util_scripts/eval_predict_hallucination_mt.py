@@ -6,7 +6,7 @@ import shutil
 from scipy import stats
 import torch
 
-test_dirs = ["evals/mt", "evals/mt"]
+test_dirs = ["eval_data/mt", "eval_data/mt"]
 test_prefix = ["trans2s", "mbart"]
 
 models = ["path/to/the/saved/model"]  # you can test multiple models
@@ -72,7 +72,6 @@ for model in models:
     print("Loaded the model!")
     xlmr.cuda()
     xlmr.eval()
-    xlmr.half()
     max_positions = xlmr.model.max_positions()
 
     for use_ref in [0, 1]:

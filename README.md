@@ -100,6 +100,8 @@ We provide the evaluation scripts for the benchmark datasets under `./eval_data`
 To evaluate on these datasets, we provide python scripts `./util_scripts/eval_predict_hallucination_mt.py` and
 `./util_scripts/eval_predict_hallucination_xsum.py` for MT and summarization respectively (they only differ slightly).
 First, you need to specify the path to the saved detection model directory and training data path in `Line 12-13`, then run them.
+We have released our trained models for these benchmark datasets [here](tba) by first setting the `models` to be `['path/to/the/unzipped/folder']`
+and `datapath` to be the folder of data inside the unzipped file.
 
 ## Prediction
 To simply use the trained model for hallucination prediction for your own input, we provide an example script `./util_scripts/predict_hallucination_mt.py`
