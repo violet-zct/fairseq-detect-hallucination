@@ -19,7 +19,7 @@ if not os.path.exists(opt_dir):
 def make_batches(total, bsz):
     batches = []
     for ii in range(0, total, bsz):
-        batches.append((ii, ii+bsz if ii + bsz < total else total-1))
+        batches.append((ii, ii+bsz if ii + bsz < total else total))
     return batches
 
 
@@ -80,7 +80,7 @@ for model in models:
 
     for use_ref in [0, 1]:
         print(f"use ref = {use_ref}")
-        slines = [[], [], [], [], []]
+
         for prefix, test_dir in zip(test_prefix, test_dirs):
             log_name = os.path.join(opt_dir, "use_ref_{}_{}.log".format(use_ref, prefix.lower()))
             flog = open(log_name, "w", encoding="utf-8")
@@ -108,22 +108,13 @@ for model in models:
                     open(os.path.join(test_dir, prefix + ".ref"), encoding='utf-8') as fin_ref:
 
                 for src, tgt, label, ref in zip(fsrc, ftgt, flabel, fin_ref):
-                    # this is handled during predictions as well
-                    if len(src.strip().split()) + len(tgt.strip().split()) + 4 > max_positions:
-                        continue
-                    if use_ref and len(src.strip().split()) + len(ref.strip().split()) + len(
-                            tgt.strip().split()) + 6 > max_positions:
-                        continue
-                    data.append((src, tgt, label, ref))
+                    data.append((src.strip(), tgt.strip(), label.strip(), ref.strip()))
 
             for i, j in make_batches(len(data), bsz):
                 slines = [[sample[0] for sample in data[i: j]], [sample[1] for sample in data[i: j]],
-                          [sample[2] for sample in data[i: j]], [sample[4] for sample in data[i: j]]]
+                          [sample[2] for sample in data[i: j]], [sample[3] for sample in data[i: j]]]
                 count += len(slines[0])
-                first_seg_lengths = [
-                    len(s.strip().split()) if not use_ref else len(s.strip().split()) + len(r.strip().split())
-                    for s, r in zip(slines[0], slines[-1])] if not raw else None
-                # if raw, target are detoknized labels
+
                 sent_target_labels = np.array(
                     [1 if sum([int(l) for l in s.strip().split()]) > 0 else 0 for s in slines[2]])
                 all_sent_labels_gold.extend(sent_target_labels)
@@ -137,7 +128,6 @@ for model in models:
                 with torch.no_grad():
                     prediction_label, prediction_probs, target_bpes = roberta.predict_hallucination_labels(slines[0],
                                                                                                            slines[1],
-                                                                                                           first_seg_lengths=first_seg_lengths,
                                                                                                            raw=raw,
                                                                                                            inputs_ref=slines[-1] if use_ref else None)
                 # convert bpe labels to raw labels

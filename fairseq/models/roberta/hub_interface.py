@@ -58,22 +58,29 @@ class RobertaHubInterface(nn.Module):
             >>> roberta.encode('world').tolist()
             [0, 8331, 2]
         """
+        def assign_lengths(max_length_allowed, addl_lengths_list):
+            # priority from the last
+            new_addl_lengths = [0] * len(addl_lengths_list)
+            remain_length = max_length_allowed
+            for idx, length in enumerate(addl_lengths_list[::-1]):
+                if length >= max_length_allowed:
+                    new_addl_lengths[len(addl_lengths_list)-1-idx] = remain_length // 2
+                    remain_length -= (remain_length // 2)
+                else:
+                    new_addl_lengths[len(addl_lengths_list)-1-idx] = length
+                    remain_length -= length
+            return remain_length, new_addl_lengths
+
         if raw:
             first_seg_bpe = self.bpe.encode(sentence)
             appended_seg_bpe = [self.bpe.encode(s) for ii, s in enumerate(addl_sentences)]
             length_appended_bpe = [len(seg.split()) for seg in appended_seg_bpe]
             special_tokens = 6 if len(appended_seg_bpe) == 2 else 4
-            occupied_tokens = sum(length_appended_bpe)
-            allowed_first_seg_length = self.model.max_positions() - special_tokens - occupied_tokens
+            total_length = self.model.max_positions() - special_tokens
 
-            # hack for overlong inputs
-            valid_length = self.model.max_positions() - special_tokens - 2
-            if len(first_seg_bpe.split()) >= valid_length or len(appended_seg_bpe[-1].split()) >= valid_length:
-                first_seg_bpe = " ".join(first_seg_bpe.split()[:(valid_length // 2)])
-                appended_seg_bpe = [" ".join(bpe.split()[:(valid_length // 2)]) for bpe in appended_seg_bpe]
-
-            elif 0 < allowed_first_seg_length < len(first_seg_bpe.split()):
-                first_seg_bpe = " ".join(first_seg_bpe.split()[:allowed_first_seg_length])
+            allowed_first_seg_length, addl_lengths = assign_lengths(total_length, length_appended_bpe)
+            appended_seg_bpe = [" ".join(bpe.split()[:ll]) for ll, bpe in zip(addl_lengths, appended_seg_bpe)]
+            first_seg_bpe = " ".join(first_seg_bpe.split()[:allowed_first_seg_length])
 
             first_seg_length = len(first_seg_bpe.split()) + 3
             bpe_sentence = '<s> ' + first_seg_bpe + ' </s>'
