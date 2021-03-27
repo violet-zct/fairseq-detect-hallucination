@@ -1,5 +1,16 @@
 #! /bin/bash
-source activate py37
+#!/bin/bash
+#SBATCH --output=slurm_logs/slurm-%A-%a.out
+#SBATCH --error=slurm_logs/slurm-%A-%a.err
+#SBATCH --job-name=mbart
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --gres=gpu:v100:1
+#SBATCH --mem=30g
+#SBATCH --time=4320
+#SBATCH --array=0
+
+source activate hal
 
 # Tune these hyperparameters for synthetic noises
 low_mask_prob=0.0
