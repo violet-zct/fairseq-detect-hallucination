@@ -20,7 +20,7 @@ high_random_prob=0.3
 insert_prob=0.2
 mask_length="none"
 random_word_span=0
-mask_whole_word=0
+mask_whole_word=1
 # If the target language is not English, you could also generate synthetic data with mbart.
 gen_with_mbart=1
 iters=5  # generate this many number of noised targets for each input line
