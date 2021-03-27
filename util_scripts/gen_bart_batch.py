@@ -27,14 +27,16 @@ parser.add_argument("--random-word-span", type=int, default=0)
 parser.add_argument("--gen-with-mbart", type=int, default=0)
 parser.add_argument("--batch-size", type=int, default=96)
 
+parser.add_argument("--model-path", type=str, default=None)
+
 args = parser.parse_args()
 
 # Fill your mbart or bart checkpoint path
 if args.gen_with_mbart:
     bart = BARTModel.from_pretrained(
-        "/checkpoint/chuntinz/data/mbart/mbart.cc100",
+        args.model_path,
         checkpoint_file='model.pt',
-        data_name_or_path="/checkpoint/chuntinz/data/mbart/mbart.cc100",
+        data_name_or_path=args.model_path,
         bpe="sentencepiece"
     )
 else:
