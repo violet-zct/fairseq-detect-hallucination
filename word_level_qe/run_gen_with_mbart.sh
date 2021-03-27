@@ -36,7 +36,7 @@ config="mask_${low_mask_prob}_${high_mask_prob}_random_${low_random_prob}_${high
 train_output=${opt_dir}/train.${config}
 
 python -u util_scripts/gen_bart_batch.py \
-  --model-path
+  --model-path ${model_path} \
   --gen-with-mbart ${gen_with_mbart} \
   --iters ${iters} \
   --input ${input} \
