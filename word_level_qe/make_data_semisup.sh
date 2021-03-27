@@ -17,16 +17,15 @@ SRC=en
 TGT=de
 
 suffix=${1}  # the config in run_gen_synthetic_data_with_bart.sh
-rootdir=/home/chuntinz/tir5/data/qe_wmt18_ende/data #${2}  #todo
+rootdir=/home/chuntinz/tir5/data/qe_wmt18_ende/data #${2}
 input_dir="${rootdir}/bart_gen"
 opt_root="${rootdir}/bart_gen"
 
 # Path to the sentencepiece model (used by xlmr)
-bpe_path=/home/chuntinz/tir5/pretrain_models/xlmr.large/sentencepiece.bpe.model #${3} #todo
+bpe_path=${3}
 # Path to the dictionary used by the pretrained model (XLM-R) for binarized data creation for finetuning
-dict_path=/home/chuntinz/tir5/pretrain_models/xlmr.large/dict.txt #${4}  #todo
-#iters=${5:-3}  # number of iterations in run_gen_synthetic_data_with_bart.sh
-iters=${2}  # number of iterations in run_gen_synthetic_data_with_bart.sh
+dict_path=${4}
+iters=${5:-3}  # number of iterations in run_gen_synthetic_data_with_bart.sh
 
 ## If you are finetuning with Roberta (English task) or XLM-Roberta (crosslingual task), set the corresponding model here
 #finetune_model=xlmr
