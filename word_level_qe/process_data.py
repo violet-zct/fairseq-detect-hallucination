@@ -18,7 +18,6 @@ sp.Load(vocab)
 
 def convert_raw_labels_to_spm_labels(sent_spm, token_labels):
     sent_detoks = sent_spm.strip().replace(' ', '').replace('\u2581', ' ').split()
-    token_labels = token_labels.strip().split()
     assert len(sent_detoks) == len(token_labels)
 
     new_labels = []
@@ -83,5 +82,5 @@ for split in ['train', 'dev', 'test']:
 
     spm(os.path.join(opt_dir, "{}.en".format(opt_split)), os.path.join(opt_dir, "{}.en.bpe".format(opt_split)))
     spm_labels(os.path.join(opt_dir, "{}.de".format(opt_split)), os.path.join(opt_dir, "{}.de.bpe".format(opt_split)),
-               tags, os.path.join(opt_dir, '{}.bpe.labels'.format(opt_split)))
+               tags_list, os.path.join(opt_dir, '{}.bpe.labels'.format(opt_split)))
     spm(os.path.join(opt_dir, "{}.ref".format(opt_split)), os.path.join(opt_dir, "{}.ref.bpe".format(opt_split)))

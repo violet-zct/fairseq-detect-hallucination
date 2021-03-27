@@ -274,7 +274,7 @@ class BARTHubInterface(nn.Module):
         return sample
 
     def sample(self, sentences: List[str], beam: int = 1, verbose: bool = False, **kwargs) -> (List[str], List[str]):
-        kwargs["lenpen"] = 3
+        kwargs["lenpen"] = 1.5
 
         pair_input = [self.encode(sentence) for sentence in sentences]
         intact_input = [inpt[0] for inpt in pair_input]

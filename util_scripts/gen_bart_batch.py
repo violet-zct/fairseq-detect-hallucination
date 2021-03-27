@@ -37,7 +37,8 @@ if args.gen_with_mbart:
         args.model_path,
         checkpoint_file='model.pt',
         data_name_or_path=args.model_path,
-        bpe="sentencepiece"
+        bpe="sentencepiece",
+        layernorm_embedding=True,
     )
 else:
     bart = BARTModel.from_pretrained(
@@ -90,7 +91,7 @@ for _ in range(args.iters):
                     fout.flush()
                 slines = []
 
-            if count % 5000 == 0:
+            if count % 500 == 0:
                 print("processed {} batches!".format(count))
             slines.append(sline.strip())
             count += 1

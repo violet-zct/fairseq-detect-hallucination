@@ -646,8 +646,8 @@ class SequenceGenerator(nn.Module):
             ]
         for bbsz_idx in range(bsz * beam_size):
             lprobs[bbsz_idx][
-                torch.tensor(banned_tokens[bbsz_idx]).long()
-            ] = torch.tensor(-math.inf, dtype=torch.float)
+                torch.tensor(banned_tokens[bbsz_idx]).long().cuda()
+            ] = torch.tensor(-math.inf, dtype=torch.float).cuda()
         return lprobs
 
 
