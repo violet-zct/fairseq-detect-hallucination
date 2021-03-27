@@ -32,7 +32,7 @@ if [ ! -d ${opt_dir} ]; then
   mkdir -p ${opt_dir}
 fi
 model_path="/home/chuntinz/tir5/pretrain_models/mbart.cc25.v2"
-config="mask_${low_mask_prob}_${high_mask_prob}_random_${low_random_prob}_${high_random_prob}_insert_${insert_prob}_wholeword_${mask_whole_word}"
+config="mask_${low_mask_prob}_${high_mask_prob}_random_${low_random_prob}_${high_random_prob}_insert_${insert_prob}_wholeword_${mask_whole_word}_iters_${iters}"
 train_output=${opt_dir}/train.${config}
 
 python -u util_scripts/gen_bart_batch.py \
