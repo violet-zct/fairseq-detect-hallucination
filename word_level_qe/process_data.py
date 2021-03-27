@@ -19,7 +19,7 @@ for split in ['train', 'dev', 'test']:
     shutil.copy(os.path.join(root, split, "{}.mt".format(split)), os.path.join(opt_dir, "{}.tran".format(opt_split)))
     shutil.copy(os.path.join(root, split, "{}.pe".format(split)), os.path.join(opt_dir, "{}.de".format(opt_split)))
 
-    with open(os.path.join(root, '{}.tags'.format(split)), "r") as fin, open(os.path.join(opt_dir, '{}.labels'.format(opt_split)), "w") as fout:
+    with open(os.path.join(root, split, '{}.tags'.format(split)), "r") as fin, open(os.path.join(opt_dir, '{}.labels'.format(opt_split)), "w") as fout:
         for line in fin:
             fields = line.strip().split()
             assert len(fields) % 2 == 1
