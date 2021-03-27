@@ -21,7 +21,7 @@ from fairseq.models.transformer import TransformerModel
 from fairseq.modules.transformer_sentence_encoder import init_bert_params
 
 from .hub_interface import BARTHubInterface
-
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -111,6 +111,8 @@ class BARTModel(TransformerModel):
             load_checkpoint_heads=True,
             **kwargs,
         )
+        if 'mbart' in model_name_or_path:
+            x['args'].sentencepiece_vocab = os.path.join(model_name_or_path, 'sentence.bpe.model')
         return BARTHubInterface(x['args'], x['task'], x['models'][0])
 
     def register_classification_head(self, name, num_classes=None, inner_dim=None, **kwargs):
