@@ -15,7 +15,7 @@ source activate hal  #todo
 # path to the XLM-R pretrained model
 ROOT=/home/chuntinz/tir5/pretrain_models/xlmr.large #todo
 # path to the synthetic data created with make_synthetic_data_mt.sh
-datadir=/home/chuntinz/tir5/data/qe_wmt18_ende/data/bart_gen  #todo
+datadir=/home/chuntinz/tir5/data/qe_wmt18_ende/data2/bart_gen  #todo
 DATABIN=${datadir}/sup/bin  #todo
 # path to the save directory
 SAVE=checkpoints/11_sup_with_ref_mask_lm_0.3  #todo
