@@ -132,6 +132,28 @@ def log_scalar(
         agg[key].update(value, weight)
 
 
+def log_scalar_sum(
+    key: str,
+    value: float,
+    priority: int = 10,
+    round: Optional[int] = None,
+):
+    """Log a scalar value.
+
+    Args:
+        key (str): name of the field to log
+        value (float): value to log
+        weight (float): weight that this value contributes to the average.
+            A weight of 0 will always log the latest value.
+        priority (int): smaller values are logged earlier in the output
+        round (Optional[int]): number of digits to round to when displaying
+    """
+    for agg in get_active_aggregators():
+        if key not in agg:
+            agg.add_meter(key, SumMeter(round=round), priority)
+        agg[key].update(value)
+
+
 def log_derived(key: str, fn: Callable[[MetersDict], float], priority: int = 20):
     """Log a scalar value derived from other meters.
 

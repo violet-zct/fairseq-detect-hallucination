@@ -15,10 +15,15 @@ from fairseq.criterions import FairseqCriterion, register_criterion
 @register_criterion('token_prediction')
 class TokenPredictionCriterion(FairseqCriterion):
 
-    def __init__(self, task, classification_head_name, masked_lm_loss_weight):
+    def __init__(self, task, classification_head_name, masked_lm_loss_weight, upweight_minority_labels):
         super().__init__(task)
         self.classification_head_name = classification_head_name
         self.masked_lm_loss_weight = masked_lm_loss_weight
+        self.upweight_minority_labels = upweight_minority_labels
+        if self.upweight_minority_labels:
+            self.register_buffer('weights', torch.FloatTensor([1.0, 2.0]))
+        else:
+            self.weights = None
 
     @staticmethod
     def add_args(parser):
@@ -27,6 +32,7 @@ class TokenPredictionCriterion(FairseqCriterion):
                             default='sentence_classification_head',
                             help='name of the classification head to use')
         parser.add_argument('--masked-lm-loss-weight', type=float, default=0.0)
+        parser.add_argument('--upweight-minority-labels', type=int, default=0)
         # fmt: on
 
     def forward(self, model, sample, reduce=True):
@@ -62,7 +68,7 @@ class TokenPredictionCriterion(FairseqCriterion):
         assert sum(target_lengths) == sample_size
 
         lprobs = F.log_softmax(logits, dim=-1, dtype=torch.float32)
-        loss = F.nll_loss(lprobs, targets, reduction='sum')
+        loss = F.nll_loss(lprobs, targets, reduction='sum', weight=self.weights)
 
         if parallel_data_mask is not None:
             # compute masked LM loss on the target side
@@ -92,7 +98,6 @@ class TokenPredictionCriterion(FairseqCriterion):
         nt_correct = sum([1 for p, t in zip(preds, targets) if p.item() == 1 and t.item() == 1])
         nf_correct = sum([1 for p, t in zip(preds, targets) if p.item() == 0 and t.item() == 0])
         nt_precision_denom = sum(preds == 1)
-        
         nt_recall_denom = sum(targets == 1)
         nf_precision_denom = sum(preds == 0)
         nf_recall_denom = sum(targets == 0)
@@ -133,13 +138,13 @@ class TokenPredictionCriterion(FairseqCriterion):
             nf_precision_denom = sum(log.get('nf_precision_denom', 0) for log in logging_outputs)
             nf_recall_denom = sum(log.get('nf_recall_denom', 0) for log in logging_outputs)
 
-            metrics.log_scalar('nt_correct', nt_correct, 0, round=3)
-            metrics.log_scalar('nt_precision_denom', nt_precision_denom, 0, round=3)
-            metrics.log_scalar('nt_recall_denom', nt_recall_denom, 0, round=3)
+            metrics.log_scalar_sum('nt_correct', nt_correct, round=3)
+            metrics.log_scalar_sum('nt_precision_denom', nt_precision_denom, round=3)
+            metrics.log_scalar_sum('nt_recall_denom', nt_recall_denom, round=3)
 
-            metrics.log_scalar('nf_correct', nf_correct, 0, round=3)
-            metrics.log_scalar('nf_precision_denom', nf_precision_denom, 0, round=3)
-            metrics.log_scalar('nf_recall_denom', nf_recall_denom, 0, round=3)
+            metrics.log_scalar_sum('nf_correct', nf_correct, round=3)
+            metrics.log_scalar_sum('nf_precision_denom', nf_precision_denom, round=3)
+            metrics.log_scalar_sum('nf_recall_denom', nf_recall_denom, round=3)
 
         if len(logging_outputs) > 0 and 'masked_lm_loss' in logging_outputs[0]:
             masked_lm_loss = sum(log.get('masked_lm_loss', 0) for log in logging_outputs)
