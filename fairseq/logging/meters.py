@@ -79,6 +79,8 @@ class AverageMeter(Meter):
             if n > 0:
                 self.sum = type_as(self.sum, val) + (val * n)
                 self.count = type_as(self.count, n) + n
+            else:
+                self.sum = type_as(self.sum, val) + val
 
     def state_dict(self):
         return {
@@ -96,7 +98,7 @@ class AverageMeter(Meter):
 
     @property
     def avg(self):
-        return self.sum / self.count if self.count > 0 else self.val
+        return self.sum / self.count if self.count > 0 else self.sum
 
     @property
     def smoothed_value(self) -> float:
