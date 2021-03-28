@@ -5,12 +5,12 @@ import sys
 
 
 root = "/home/chuntinz/tir5/data/qe_wmt18_ende"
-opt_dir = os.path.join(root, "data")
+opt_dir = os.path.join(root, "data2")
 if not os.path.exists(opt_dir):
     os.mkdir(opt_dir)
 
 
-model_path = "/home/chuntinz/tir5/pretrain_models/mbart.cc25.v2"
+model_path = "/home/chuntinz/tir5/pretrain_models/mbart.cc100"
 vocab = os.path.join(model_path, 'sentence.bpe.model')
 sp = spm.SentencePieceProcessor()
 sp.Load(vocab)
