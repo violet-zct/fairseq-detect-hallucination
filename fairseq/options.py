@@ -340,6 +340,8 @@ def add_dataset_args(parser, train=False, gen=False):
                                 ' (e.g. train, valid, test)')
         group.add_argument('--validate-interval', type=int, default=1, metavar='N',
                            help='validate every N epochs')
+        group.add_argument('--validate-interval-updates', type=int, default=0, metavar='N',
+                           help='validate every N updates')
         group.add_argument('--fixed-validation-seed', default=None, type=int, metavar='N',
                            help='specified random seed for validation')
         group.add_argument('--disable-validation', action='store_true',
