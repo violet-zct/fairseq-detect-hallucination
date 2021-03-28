@@ -15,10 +15,10 @@ source activate hal  #todo
 # path to the XLM-R pretrained model
 ROOT=/home/chuntinz/tir5/pretrain_models/xlmr.large #todo
 # path to the synthetic data created with make_synthetic_data_mt.sh
-datadir=/home/chuntinz/tir5/data/qe_wmt18_ende/data/bart_gen  #todo
+datadir=/home/chuntinz/tir5/data/qe_wmt18_ende/data2/bart_gen  #todo
 DATABIN=${datadir}/sup/bin  #todo
 # path to the save directory
-SAVE=checkpoints/6_sup_with_ref_upweight_pos_labels_mask_lm_0.5  #todo
+SAVE=checkpoints/10_sup_with_ref_upweight_pos_labels_mask_lm_0.5  #todo
 
 rm -rf ${SAVE}
 mkdir -p ${SAVE}
@@ -39,7 +39,7 @@ REF=ref  # subset name of reference
 
 python -u train.py ${DATABIN}/ \
     --restore-file ${MODEL_PATH} --upweight-minority-labels 1 \
-    --task sentence_prediction --max-update 10000 \
+    --task sentence_prediction --max-update 15000 \
     --input0 ${SRC} --input1 ${TGT} --input2 ${REF} \
     --add-ref-prob 1 --dropout-ref 0.7 \
     --add-tran-loss 1 --mask-prob 0.5 --masked-lm-loss-weight 0.5 \
