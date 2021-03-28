@@ -18,7 +18,7 @@ SRC=en
 TGT=de
 
 suffix=${1}  # the config in run_gen_synthetic_data_with_bart.sh
-rootdir=/home/chuntinz/tir5/data/qe_wmt18_ende/data #${2}  #todo
+rootdir=/home/chuntinz/tir5/data/qe_wmt18_ende/data2 #${2}  #todo
 opt_root="${rootdir}/bart_gen"
 
 # Path to the sentencepiece model (used by xlmr)
