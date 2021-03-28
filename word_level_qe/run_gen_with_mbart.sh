@@ -26,7 +26,7 @@ gen_with_mbart=1
 iters=5  # generate this many number of noised targets for each input line
 
 # Fill your input file path (the target data in the bitext training corpus) and output directory
-input="/home/chuntinz/tir5/data/qe_wmt18_ende/data/train.ref"
+input="/home/chuntinz/tir5/data/qe_wmt18_ende/data2/train.ref"
 opt_dir=$(dirname "${input}")/bart_gen
 if [ ! -d ${opt_dir} ]; then
   mkdir -p ${opt_dir}
