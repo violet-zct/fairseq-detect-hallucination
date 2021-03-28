@@ -16,10 +16,11 @@ source activate hal  #todo
 ROOT=/private/home/chuntinz/work/fairseq-hallucination/pretrain_scripts/container/xlmr.large  #todo
 # path to the synthetic data created with make_synthetic_data_mt.sh
 datadir=/home/chuntinz/tir5/data/qe_wmt18_ende/data/bart_gen  #todo
-DATABIN=${datadir}/mask_0.0_0.3_random_0.0_0.3_insert_0.2_wholeword_1_iters_5  #todo
+DATABIN=${datadir}/mask_0.0_0.3_random_0.0_0.3_insert_0.2_wholeword_1_iters_5/bin  #todo
 # path to the save directory
 SAVE=checkpoints/unsup_iter1  #todo
 
+mkdir -p ${SAVE}
 cp $0 ${SAVE}/run.sh
 ln -s ${ROOT}/sentencepiece.bpe.model ${SAVE}/sentencepiece.bpe.model
 
@@ -37,10 +38,10 @@ REF=ref  # subset name of reference
 
 python -u train.py ${DATABIN}/ \
     --restore-file ${MODEL_PATH} \
-    --task sentence_prediction --max-update 20000 \
+    --task sentence_prediction --max-update 10000 \
     --input0 ${SRC} --input1 ${TGT} --input2 ${REF} \
     --add-ref-prob 1 --dropout-ref 0.3 \
-    --add-tran-loss 1 --mask-prob 0.3 --masked-lm-loss-weight 0.6 \
+    --add-tran-loss 1 --mask-prob 0.3 --masked-lm-loss-weight 0.3 \
     --add-target-num-tokens \
     --max-sentences ${MAX_SENTENCES} --max-tokens 4096 \
     --reset-optimizer --reset-dataloader --reset-meters \
