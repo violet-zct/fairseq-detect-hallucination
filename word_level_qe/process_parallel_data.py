@@ -25,8 +25,8 @@ def spm(fin_path, fout_path):
 for split in ['corpus']:
     opt_split = 'para'
 
-    shutil.copy(os.path.join(root, split, "{}.en".format(split)), os.path.join(opt_dir, "{}.en".format(opt_split)))
-    shutil.copy(os.path.join(root, split, "{}.de".format(split)), os.path.join(opt_dir, "{}.ref".format(opt_split)))
+    shutil.copy(os.path.join(root, "others", "{}.en".format(split)), os.path.join(opt_dir, "{}.en".format(opt_split)))
+    shutil.copy(os.path.join(root, "others", "{}.de".format(split)), os.path.join(opt_dir, "{}.ref".format(opt_split)))
 
     spm(os.path.join(opt_dir, "{}.en".format(opt_split)), os.path.join(opt_dir, "{}.en.bpe".format(opt_split)))
     spm(os.path.join(opt_dir, "{}.ref".format(opt_split)), os.path.join(opt_dir, "{}.ref.bpe".format(opt_split)))
