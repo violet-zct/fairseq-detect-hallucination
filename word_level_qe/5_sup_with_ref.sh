@@ -18,7 +18,7 @@ ROOT=/home/chuntinz/tir5/pretrain_models/xlmr.large #todo
 datadir=/home/chuntinz/tir5/data/qe_wmt18_ende/data/bart_gen  #todo
 DATABIN=${datadir}/sup/bin  #todo
 # path to the save directory
-SAVE=checkpoints/5_sup_with_ref_mask_lm_0.3  #todo
+SAVE=checkpoints/11_sup_with_ref_mask_lm_0.3  #todo
 
 rm -rf ${SAVE}
 mkdir -p ${SAVE}
@@ -39,10 +39,10 @@ REF=ref  # subset name of reference
 
 python -u train.py ${DATABIN}/ \
     --restore-file ${MODEL_PATH} \
-    --task sentence_prediction --max-update 10000 \
+    --task sentence_prediction --max-update 15000 \
     --input0 ${SRC} --input1 ${TGT} --input2 ${REF} \
     --add-ref-prob 1 --dropout-ref 0.7 \
-    --add-tran-loss 1 --mask-prob 0.3 --masked-lm-loss-weight 0.3 \
+    --add-tran-loss 1 --mask-prob 0.5 --masked-lm-loss-weight 0.5 \
     --add-target-num-tokens \
     --max-sentences ${MAX_SENTENCES} --max-tokens 4096 \
     --reset-optimizer --reset-dataloader --reset-meters \
