@@ -324,7 +324,7 @@ def get_valid_stats(args, trainer, stats):
     #    nt_precision = nt_correct * 1.0 / stats['nt_precision_denom']
     #    nt_recall = nt_correct * 1.0 / stats['nt_recall_denom']
         
-        if stats['nt_precision_denom'] == 0 or stats['nt_recall_denom'] == 0:
+        if stats['nt_precision_denom'] == 0 or stats['nt_recall_denom'] == 0 or nt_correct == 0:
             nt_f1 = 0
         else:
             nt_precision = nt_correct * 1.0 / stats['nt_precision_denom']
@@ -335,7 +335,7 @@ def get_valid_stats(args, trainer, stats):
         nf_correct = stats['nf_correct']
 #        nf_precision = nf_correct * 1.0 / stats['nf_precision_denom']
 #        nf_recall = nf_correct * 1.0 / stats['nf_recall_denom']
-        if stats['nf_precision_denom'] == 0 or stats['nf_recall_denom'] == 0:
+        if stats['nf_precision_denom'] == 0 or stats['nf_recall_denom'] == 0 or nf_correct == 0:
             nf_f1 = 0
         else:
             nf_precision = nf_correct * 1.0 / stats['nf_precision_denom']
