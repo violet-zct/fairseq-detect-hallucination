@@ -92,6 +92,7 @@ class TokenPredictionCriterion(FairseqCriterion):
         nt_correct = sum([1 for p, t in zip(preds, targets) if p.item() == 1 and t.item() == 1])
         nf_correct = sum([1 for p, t in zip(preds, targets) if p.item() == 0 and t.item() == 0])
         nt_precision_denom = sum(preds == 1)
+        
         nt_recall_denom = sum(targets == 1)
         nf_precision_denom = sum(preds == 0)
         nf_recall_denom = sum(targets == 0)
