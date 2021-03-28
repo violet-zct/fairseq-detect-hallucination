@@ -32,6 +32,7 @@ iters=${2}  # number of iterations in run_gen_synthetic_data_with_bart.sh
 #finetune_model=xlmr
 
 optdir=${opt_root}/${suffix}
+rm -rf $optdir
 if [ ! -d ${optdir} ]; then
   mkdir -p ${optdir}
 fi

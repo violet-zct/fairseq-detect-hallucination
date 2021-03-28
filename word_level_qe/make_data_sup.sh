@@ -16,7 +16,6 @@
 SRC=en
 TGT=de
 
-suffix=${1}  # the config in run_gen_synthetic_data_with_bart.sh
 rootdir=/home/chuntinz/tir5/data/qe_wmt18_ende/data #${2}  #todo
 opt_root="${rootdir}/bart_gen"
 
@@ -28,15 +27,14 @@ dict_path=/home/chuntinz/tir5/pretrain_models/xlmr.large/dict.txt #${4}  #todo
 ## If you are finetuning with Roberta (English task) or XLM-Roberta (crosslingual task), set the corresponding model here
 #finetune_model=xlmr
 
-optdir=${opt_root}/semi_${suffix}
-unsup_dir=${opt_root}/${suffix}
+optdir=${opt_root}/sup
 rm -rf ${optdir}
 mkdir -p ${optdir}
 
-cat $rootdir/train.bpe.labels $unsup_dir/train.label > $optdir/train.label
-cat $rootdir/train.de.bpe $unsup_dir/train.${TGT} > $optdir/train.${TGT}
-cat $rootdir/train.en.bpe $unsup_dir/train.${SRC} > $optdir/train.${SRC}
-cat $rootdir/train.ref.bpe $unsup_dir/train.ref > $optdir/train.ref
+cp $rootdir/train.bpe.labels $optdir/train.label
+cp $rootdir/train.de.bpe $optdir/train.${TGT}
+cp $rootdir/train.en.bpe $optdir/train.${SRC}
+cp $rootdir/train.ref.bpe $optdir/train.ref
 
 cp $rootdir/valid.bpe.labels $optdir/valid.label
 cp $rootdir/valid.de.bpe $optdir/valid.${TGT}
