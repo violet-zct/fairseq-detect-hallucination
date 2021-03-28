@@ -68,7 +68,10 @@ class TokenPredictionCriterion(FairseqCriterion):
         assert sum(target_lengths) == sample_size
 
         lprobs = F.log_softmax(logits, dim=-1, dtype=torch.float32)
-        loss = F.nll_loss(lprobs, targets, reduction='sum', weight=self.weights)
+        if self.upweight_minority_labels:
+            loss = F.nll_loss(lprobs, targets, reduction='sum', weight=torch.FloatTensor([1., 2.]).cuda())
+        else:
+            loss = F.nll_loss(lprobs, targets, reduction='sum')
 
         if parallel_data_mask is not None:
             # compute masked LM loss on the target side
