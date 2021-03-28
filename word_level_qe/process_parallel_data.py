@@ -10,8 +10,8 @@ if not os.path.exists(opt_dir):
     os.mkdir(opt_dir)
 
 
-model_path = "/home/chuntinz/tir5/pretrain_models/mbart.cc100"
-vocab = os.path.join(model_path, 'sentence.bpe.model')
+model_path = "/home/chuntinz/tir5/pretrain_models/xlmr.large/"
+vocab = os.path.join(model_path, 'sentencepiece.bpe.model')
 sp = spm.SentencePieceProcessor()
 sp.Load(vocab)
 
