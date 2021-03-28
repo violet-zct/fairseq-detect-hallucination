@@ -88,7 +88,21 @@ class TokenPredictionCriterion(FairseqCriterion):
             'sample_size': sample_size if self.masked_lm_loss_weight <= 0 else 1,
         }
         preds = logits.argmax(dim=1)
+
+        nt_correct = sum([1 for p, t in zip(preds, targets) if p.item() == 1 and t.item() == 1])
+        nf_correct = sum([1 for p, t in zip(preds, targets) if p.item() == 0 and t.item() == 0])
+        nt_precision_denom = sum(preds == 1)
+        nt_recall_denom = sum(targets == 1)
+        nf_precision_denom = sum(preds == 0)
+        nf_recall_denom = sum(targets == 0)
+
         logging_output['ncorrect'] = (preds == targets).sum()
+        logging_output['nt_correct'] = nt_correct
+        logging_output['nf_correct'] = nf_correct
+        logging_output['nt_precision_denom'] = nt_precision_denom
+        logging_output['nt_recall_denom'] = nt_recall_denom
+        logging_output['nf_precision_denom'] = nf_precision_denom
+        logging_output['nf_recall_denom'] = nf_recall_denom
 
         if parallel_data_mask is not None:
             logging_output['hallucination_pred_loss'] = hallucination_pred_loss.data
@@ -109,6 +123,22 @@ class TokenPredictionCriterion(FairseqCriterion):
         if len(logging_outputs) > 0 and 'ncorrect' in logging_outputs[0]:
             ncorrect = sum(log.get('ncorrect', 0) for log in logging_outputs)
             metrics.log_scalar('accuracy', 100.0 * ncorrect / nsentences, nsentences, round=1)
+
+            nt_correct = sum(log.get('nt_correct', 0) for log in logging_outputs)
+            nt_precision_denom = sum(log.get('nt_precision_denom', 0) for log in logging_outputs)
+            nt_recall_denom = sum(log.get('nt_recall_denom', 0) for log in logging_outputs)
+
+            nf_correct = sum(log.get('nf_correct', 0) for log in logging_outputs)
+            nf_precision_denom = sum(log.get('nf_precision_denom', 0) for log in logging_outputs)
+            nf_recall_denom = sum(log.get('nf_recall_denom', 0) for log in logging_outputs)
+
+            metrics.log_scalar('nt_correct', nt_correct, 0, round=3)
+            metrics.log_scalar('nt_precision_denom', nt_precision_denom, 0, round=3)
+            metrics.log_scalar('nt_recall_denom', nt_recall_denom, 0, round=3)
+
+            metrics.log_scalar('nf_correct', nf_correct, 0, round=3)
+            metrics.log_scalar('nf_precision_denom', nf_precision_denom, 0, round=3)
+            metrics.log_scalar('nf_recall_denom', nf_recall_denom, 0, round=3)
 
         if len(logging_outputs) > 0 and 'masked_lm_loss' in logging_outputs[0]:
             masked_lm_loss = sum(log.get('masked_lm_loss', 0) for log in logging_outputs)

@@ -61,4 +61,4 @@ python -u train.py ${DATABIN}/ \
     --skip-invalid-size-inputs-valid-test \
     --num-workers 0 --update-freq 4 \
     --no-epoch-checkpoints --keep-interval-updates 5 --save-interval-updates 2000 \
-    --best-checkpoint-metric accuracy --maximize-best-checkpoint-metric | tee ${SAVE}/log.txt
+    --best-checkpoint-metric f1_mult --maximize-best-checkpoint-metric | tee ${SAVE}/log.txt

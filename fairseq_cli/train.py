@@ -316,6 +316,20 @@ def validate(args, trainer, task, epoch_itr, subsets):
 
 def get_valid_stats(args, trainer, stats):
     stats['num_updates'] = trainer.get_num_updates()
+    if "nt_correct" in stats:
+        nt_correct = stats['nt_correct']
+        nt_precision = nt_correct * 1.0 / stats['nt_precision_denom']
+        nt_recall = nt_correct * 1.0 / stats['nt_recall_denom']
+        nt_f1 = 2.0 * nt_precision * nt_recall / (nt_precision + nt_recall)
+        stats['nt_f1'] = nt_f1
+
+        nf_correct = stats['nf_correct']
+        nf_precision = nf_correct * 1.0 / stats['nf_precision_denom']
+        nf_recall = nf_correct * 1.0 / stats['nf_recall_denom']
+        nf_f1 = 2.0 * nf_precision * nf_recall / (nf_precision + nf_recall)
+        stats['nf_f1'] = nf_f1
+        stats['f1_mult'] = nt_f1 * nf_f1
+
     if hasattr(checkpoint_utils.save_checkpoint, 'best'):
         key = 'best_{0}'.format(args.best_checkpoint_metric)
         best_function = max if args.maximize_best_checkpoint_metric else min

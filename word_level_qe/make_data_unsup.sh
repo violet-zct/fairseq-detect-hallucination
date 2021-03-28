@@ -12,6 +12,7 @@
 #   - data
 #     - directory of new synthetic dataset
 
+source activate hal
 # Modify this as needed
 SRC=en
 TGT=de
