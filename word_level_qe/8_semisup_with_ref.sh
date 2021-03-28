@@ -1,6 +1,6 @@
 #! /bin/bash
-#SBATCH --output=slurm_logs/slurm-%A-%a.out
-#SBATCH --error=slurm_logs/slurm-%A-%a.err
+#SBATCH --output=slurm_logs/slurm-%A.out
+#SBATCH --error=slurm_logs/slurm-%A.err
 #SBATCH --job-name=finetune
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
@@ -8,7 +8,7 @@
 #SBATCH --mem=20g
 #SBATCH --cpus-per-task=5
 ##SBATCH --open-mode=append
-#SBATCH --array=0
+#SBATCH --time=4320
 
 # please load your environment
 source activate hal  #todo
@@ -16,9 +16,9 @@ source activate hal  #todo
 ROOT=/home/chuntinz/tir5/pretrain_models/xlmr.large #todo
 # path to the synthetic data created with make_synthetic_data_mt.sh
 datadir=/home/chuntinz/tir5/data/qe_wmt18_ende/data/bart_gen  #todo
-DATABIN=${datadir}/mask_0.0_0.3_random_0.0_0.3_insert_0.2_wholeword_1_iters_5/bin  #todo
+DATABIN=${datadir}/semi_mask_0.0_0.3_random_0.0_0.3_insert_0.2_wholeword_1_iters_1/bin  #todo
 # path to the save directory
-SAVE=checkpoints/unsup_iter5  #todo
+SAVE=checkpoints/8_semi_with_ref_mask_lm_0.3   #todo
 
 rm -rf ${SAVE}
 mkdir -p ${SAVE}
@@ -39,7 +39,7 @@ REF=ref  # subset name of reference
 
 python -u train.py ${DATABIN}/ \
     --restore-file ${MODEL_PATH} \
-    --task sentence_prediction --max-update 10000 --validate-interval-updates 500 \
+    --task sentence_prediction --max-update 15000 --validate-interval-updates 1000 \
     --input0 ${SRC} --input1 ${TGT} --input2 ${REF} \
     --add-ref-prob 1 --dropout-ref 0.7 \
     --add-tran-loss 1 --mask-prob 0.3 --masked-lm-loss-weight 0.3 \
