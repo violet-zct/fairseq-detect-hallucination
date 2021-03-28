@@ -1,7 +1,7 @@
 import sys
 import numpy as np
-import nltk
-from nltk.corpus import stopwords
+# import nltk
+# from nltk.corpus import stopwords
 
 f_reference = sys.argv[1]
 f_hypothesis = sys.argv[2]
@@ -10,7 +10,7 @@ opt = sys.argv[3]
 filter_sw = False
 print_backpath = False
 output_more = False
-en_stopwords = set(stopwords.words('english'))
+# en_stopwords = set(stopwords.words('english'))
 
 
 def back_trace_edit_distance(str1, str2, print_path=False):
@@ -38,7 +38,7 @@ def back_trace_edit_distance(str1, str2, print_path=False):
             break
         if i > 0 and dp_cost[i][j] == dp_cost[i-1][j] + 1:
             if print_path: print("position {}: Delete {}".format(i, str1[i - 1]))
-            if filter_sw and str1[i-1].strip('\u2581') in en_stopwords:
+            if filter_sw:  # and str1[i-1].strip('\u2581') in en_stopwords:
                 operations.append(0)
             else:
                 operations.append(2)
