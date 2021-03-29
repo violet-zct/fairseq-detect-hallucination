@@ -28,7 +28,7 @@ bpe_path=/home/chuntinz/tir5/pretrain_models/xlmr.large/sentencepiece.bpe.model 
 dict_path=/home/chuntinz/tir5/pretrain_models/xlmr.large/dict.txt #${4}  #todo
 #iters=${5:-3}  # number of iterations in run_gen_synthetic_data_with_bart.sh
 iters=${2}  # number of iterations in run_gen_synthetic_data_with_bart.sh
-
+prefix=${3:train}
 ## If you are finetuning with Roberta (English task) or XLM-Roberta (crosslingual task), set the corresponding model here
 #finetune_model=xlmr
 
@@ -57,14 +57,10 @@ for split in train; do
   mv ${fname}.ref.bpe ${optdir}/${split}.ref
   mv ${fname}.hypo.bpe ${optdir}/${split}.${TGT}
   if [ ! -f ${rootdir}/${split}.${SRC}.bpe ]; then
-    python util_scripts/spm_encode.py ${rootdir}/${split}.${SRC} ${bpe_path}
+    python util_scripts/spm_encode.py ${rootdir}/${prefix}.${SRC} ${bpe_path}
   fi
 
-  if [ ${split} = "train" ]; then
-    for (( i=1; i<=${iters}; i++ )); do cat ${rootdir}/${split}.${SRC}.bpe >> ${optdir}/${split}.${SRC}; done
-  else
-    cp ${rootdir}/${split}.${SRC}.bpe ${optdir}/${split}.${SRC}
-  fi
+  for (( i=1; i<=${iters}; i++ )); do cat ${rootdir}/${prefix}.${SRC}.bpe >> ${optdir}/${split}.${SRC}; done
 done
 
 cp $rootdir/valid.bpe.labels $optdir/valid.label
