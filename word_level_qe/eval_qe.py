@@ -9,7 +9,9 @@ import torch
 test_dirs = ["/home/chuntinz/tir5/data/qe_wmt18_ende/data2"]
 test_prefix = ["test"]
 
-models = ["/home/chuntinz/tir5/fairseq-detect-hallucination/checkpoints/6_sup_with_ref_upweight_pos_labels_mask_lm_0.5"]  # you can test multiple models
+model_root = "/home/chuntinz/tir5/fairseq-detect-hallucination/checkpoints/"
+#models = ["/home/chuntinz/tir5/fairseq-detect-hallucination/checkpoints/6_sup_with_ref_upweight_pos_labels_mask_lm_0.5"]  # you can test multiple models
+models = [os.path.join(model_root, sys.argv[1])]
 datapath = "/home/chuntinz/tir5/data/qe_wmt18_ende/data2/bart_gen/sup/bin"
 opt_dir = "output_logs"
 if not os.path.exists(opt_dir):
