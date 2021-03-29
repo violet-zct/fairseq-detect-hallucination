@@ -28,7 +28,7 @@ bpe_path=/home/chuntinz/tir5/pretrain_models/xlmr.large/sentencepiece.bpe.model 
 dict_path=/home/chuntinz/tir5/pretrain_models/xlmr.large/dict.txt #${4}  #todo
 #iters=${5:-3}  # number of iterations in run_gen_synthetic_data_with_bart.sh
 iters=${2}  # number of iterations in run_gen_synthetic_data_with_bart.sh
-prefix=${3:train}
+prefix=${3:-train}
 ## If you are finetuning with Roberta (English task) or XLM-Roberta (crosslingual task), set the corresponding model here
 #finetune_model=xlmr
 
