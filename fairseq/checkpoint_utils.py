@@ -52,10 +52,12 @@ def save_checkpoint(args, trainer, epoch_itr, val_loss):
         and not args.no_epoch_checkpoints
         and epoch % args.save_interval == 0
     )
+    # never save interval updates
     checkpoint_conds["checkpoint_{}_{}{}.pt".format(epoch, updates, suffix)] = (
         not end_of_epoch
         and args.save_interval_updates > 0
         and updates % args.save_interval_updates == 0
+        and False
     )
     checkpoint_conds["checkpoint_best{}.pt".format(suffix)] = val_loss is not None and (
         not hasattr(save_checkpoint, "best")
