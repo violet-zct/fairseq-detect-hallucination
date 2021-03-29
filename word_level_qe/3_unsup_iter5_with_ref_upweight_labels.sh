@@ -1,12 +1,12 @@
 #! /bin/bash
 #SBATCH --output=slurm_logs/slurm-%A.out
 #SBATCH --error=slurm_logs/slurm-%A.err
-#SBATCH --job-name=finetune
+#SBATCH --job-name=finetune.3
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --gres=gpu:v100:1
 #SBATCH --mem=20g
-#SBATCH --cpus-per-task=5
+#SBATCH --cpus-per-task=2
 ##SBATCH --open-mode=append
 #SBATCH --time=4320
 
@@ -39,7 +39,7 @@ REF=ref  # subset name of reference
 
 python -u train.py ${DATABIN}/ \
     --restore-file ${MODEL_PATH} --upweight-minority-labels 1 \
-    --task sentence_prediction --max-update 20000 --validate-interval-updates 1000 \
+    --task sentence_prediction --max-update 25000 --validate-interval-updates 1000 \
     --input0 ${SRC} --input1 ${TGT} --input2 ${REF} \
     --add-ref-prob 1 --dropout-ref 0.7 \
     --add-tran-loss 1 --mask-prob 0.5 --masked-lm-loss-weight 0.5 \

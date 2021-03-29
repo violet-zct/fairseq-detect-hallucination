@@ -1,12 +1,12 @@
 #! /bin/bash
 #SBATCH --output=slurm_logs/slurm-%A.out
 #SBATCH --error=slurm_logs/slurm-%A.err
-#SBATCH --job-name=finetune
+#SBATCH --job-name=finetune.9
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --gres=gpu:v100:1
 #SBATCH --mem=20g
-#SBATCH --cpus-per-task=5
+#SBATCH --cpus-per-task=2
 ##SBATCH --open-mode=append
 #SBATCH --time=4320
 
@@ -15,7 +15,7 @@ source activate hal  #todo
 # path to the XLM-R pretrained model
 ROOT=/home/chuntinz/tir5/pretrain_models/xlmr.large #todo
 # path to the synthetic data created with make_synthetic_data_mt.sh
-datadir=/home/chuntinz/tir5/data/qe_wmt18_ende/data/bart_gen  #todo
+datadir=/home/chuntinz/tir5/data/qe_wmt18_ende/data2/bart_gen  #todo
 DATABIN=${datadir}/semi_mask_0.0_0.3_random_0.0_0.3_insert_0.2_wholeword_1_iters_1/bin  #todo
 # path to the save directory
 SAVE=checkpoints/9_semi_with_ref_upweight_pos_labels_mask_lm_0.5  #todo
@@ -39,7 +39,7 @@ REF=ref  # subset name of reference
 
 python -u train.py ${DATABIN}/ \
     --restore-file ${MODEL_PATH} --upweight-minority-labels 1 \
-    --task sentence_prediction --max-update 15000 --validate-interval-updates 1000 \
+    --task sentence_prediction --max-update 40000 --validate-interval-updates 1000 \
     --input0 ${SRC} --input1 ${TGT} --input2 ${REF} \
     --add-ref-prob 1 --dropout-ref 0.7 \
     --add-tran-loss 1 --mask-prob 0.5 --masked-lm-loss-weight 0.5 \
