@@ -1,7 +1,7 @@
 #! /bin/bash
 #SBATCH --output=slurm_logs/slurm-%A.out
 #SBATCH --error=slurm_logs/slurm-%A.err
-#SBATCH --job-name=finetune.7
+#SBATCH --job-name=finetune.91
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --gres=gpu:v100:1
@@ -18,7 +18,7 @@ ROOT=/home/chuntinz/tir5/pretrain_models/xlmr.large #todo
 datadir=/home/chuntinz/tir5/data/qe_wmt18_ende/data2/bart_gen  #todo
 DATABIN=${datadir}/semi_mask_0.0_0.3_random_0.0_0.3_insert_0.1_wholeword_1_iters_1/bin  #todo
 # path to the save directory
-SAVE=checkpoints/7_semi_with_ref_higher_mask_lm_0.5 #todo
+SAVE=checkpoints/91_finetune_semi_with_ref_upweight_pos_labels_mask_lm_0.5  #todo
 
 rm -rf ${SAVE}
 mkdir -p ${SAVE}
@@ -30,7 +30,7 @@ WARMUP_UPDATES=18000
 LR=2e-05                # Peak LR for polynomial LR scheduler.
 NUM_CLASSES=2
 MAX_SENTENCES=72        # Batch size.
-MODEL_PATH=${ROOT}/model.pt  # Pretrained model path
+MODEL_PATH=/home/chuntinz/tir5/fairseq-detect-hallucination/checkpoints/31_unsup_combine_with_ref_upweight_pos_labels_mask_lm_0.5/checkpoint_best.pt  # Pretrained model path
 
 # The following subsets are created under the binarized data by make_synthetic_data_mt.sh.
 SRC=en  # subset name of source
@@ -38,7 +38,7 @@ TGT=de  # subset name of target
 REF=ref  # subset name of reference
 
 python -u train.py ${DATABIN}/ \
-    --restore-file ${MODEL_PATH} \
+    --restore-file ${MODEL_PATH} --upweight-minority-labels 1 \
     --task sentence_prediction --max-update 40000 --validate-interval-updates 1000 \
     --save-interval-updates 1000 --no-last-checkpoints --keep-interval-updates 1 \
     --input0 ${SRC} --input1 ${TGT} --input2 ${REF} \

@@ -40,6 +40,7 @@ REF=ref  # subset name of reference
 python -u train.py ${DATABIN}/ \
     --restore-file ${MODEL_PATH} --upweight-minority-labels 1 \
     --task sentence_prediction --max-update 25000 --validate-interval-updates 1000 \
+    --save-interval-updates 1000 --no-last-checkpoints --keep-interval-updates 1 \
     --input0 ${SRC} --input1 ${TGT} --input2 ${REF} \
     --add-ref-prob 1 --dropout-ref 0.7 \
     --add-tran-loss 1 --mask-prob 0.5 --masked-lm-loss-weight 0.5 \
