@@ -16,7 +16,7 @@ source activate hal  #todo
 ROOT=/home/chuntinz/tir5/pretrain_models/xlmr.large #todo
 # path to the synthetic data created with make_synthetic_data_mt.sh
 datadir=/home/chuntinz/tir5/data/qe_wmt18_ende/data2/bart_gen  #todo
-DATABIN=${datadir}/semi_mask_0.0_0.3_random_0.0_0.3_insert_0.2_wholeword_1_iters_1/bin  #todo
+DATABIN=${datadir}/semi_mask_0.0_0.3_random_0.0_0.3_insert_0.1_wholeword_1_iters_1/bin  #todo
 # path to the save directory
 SAVE=checkpoints/7_semi_with_ref_higher_mask_lm_0.5 #todo
 
