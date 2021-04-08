@@ -279,7 +279,8 @@ class RobertaHubInterface(nn.Module):
                     if predict_bpe in extra_symbols_to_ignore:
                         continue
                     predicted_token = self.bpe.decode(predict_bpe)
-                    output.append("[" + predicted_token.strip() + "]")
+                    # output.append("[" + predicted_token.strip() + "]")
+                    output.append(predicted_token.strip())
                     mask_count += 1
                 else:
                     output.append(token.strip())
