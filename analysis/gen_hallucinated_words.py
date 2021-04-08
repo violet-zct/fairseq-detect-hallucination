@@ -9,8 +9,11 @@ import torch
 test_dirs = ["eval_data/mt", "eval_data/mt"]
 test_prefix = ["trans2s", "mbart"]
 
-models = ["path/to/the/saved/model"]  # you can test multiple models
-datapath = "path/to/train/data"
+test_dirs = ["eval_data/mt"]
+test_prefix = ["trans2s"]
+
+models = ["/home/chuntinz/tir5/pretrain_models/zhen_mt"]  # you can test multiple models
+datapath = "/home/chuntinz/tir5/pretrain_models/zhen_mt/data"
 opt_dir = "output_logs"
 if not os.path.exists(opt_dir):
     os.mkdir(opt_dir)
