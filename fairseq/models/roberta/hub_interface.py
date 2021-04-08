@@ -71,6 +71,7 @@ class RobertaHubInterface(nn.Module):
                     remain_length -= length
             return remain_length, new_addl_lengths
 
+        second_seg_bpe = None
         if raw:
             first_seg_bpe = self.bpe.encode(sentence)
             appended_seg_bpe = [self.bpe.encode(s) for ii, s in enumerate(addl_sentences)]

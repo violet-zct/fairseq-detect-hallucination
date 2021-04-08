@@ -83,7 +83,7 @@ for model in models:
         for prefix, test_dir in zip(test_prefix, test_dirs):
             print(prefix, test_dir)
             log_name = os.path.join(opt_dir, "use_ref_{}_{}.log".format(use_ref, prefix.lower()))
-            ffix = open(os.path.join(test_dir, prefix + ".fix"), "w", encoding='utf-8')
+            ffix = open(os.path.join(opt_dir, prefix + ".fix"), "w", encoding='utf-8')
             flog = open(log_name, "w", encoding="utf-8")
 
             ncorrect, nsamples = 0, 0
