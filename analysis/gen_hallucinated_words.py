@@ -141,7 +141,7 @@ for model in models:
                                                                             prediction_label[cum_lengths:cum_lengths+len(sent.split())])
 
                     assert len(token_prediction_labels) == len(raw_target.split())
-                    masked_batch.append([word if hlabel == 0 else '<mask>' for word, hlabel in zip(raw_target.split(), token_prediction_labels)])
+                    masked_batch.append(" ".join([word if hlabel == 0 else '<mask>' for word, hlabel in zip(raw_target.split(), token_prediction_labels)]))
 
                     sent_pred_labels.append(int(sum(token_prediction_labels) > 0))
                     predict_hallucination_strengths_by_token.append(float(sum(token_prediction_labels))/len(token_prediction_labels))
@@ -166,7 +166,7 @@ for model in models:
 
             fixed_tokens, _ = xlmr.fill_noised_mask(masked_batch)
             for ss in fixed_tokens:
-                ffix.write(" ".join(ss) + "\n")
+                ffix.write(ss + "\n")
 
             acc = float(ncorrect)/float(nsamples)
             recall = float(nh_correct)/float(recall_total)
