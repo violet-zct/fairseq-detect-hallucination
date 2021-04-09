@@ -111,7 +111,6 @@ for model in models:
                 for src, tgt, label, ref in zip(fsrc, ftgt, flabel, fin_ref):
                     data.append((src.strip(), tgt.strip(), label.strip(), ref.strip()))
 
-            masked_batch = []
             for i, j in make_batches(len(data), bsz):
                 slines = [[sample[0] for sample in data[i: j]], [sample[1] for sample in data[i: j]],
                           [sample[2] for sample in data[i: j]], [sample[3] for sample in data[i: j]]]
@@ -129,6 +128,8 @@ for model in models:
                     prediction_label, prediction_probs, target_bpes = xlmr.predict_hallucination_labels(slines[0], slines[1],
                                                                                       raw=raw,
                                                                                       inputs_ref=slines[-1] if use_ref else None)
+
+                masked_batch = []
                 # convert bpe labels to annotation raw labels
                 new_prediction_labels = []
                 new_target = []
