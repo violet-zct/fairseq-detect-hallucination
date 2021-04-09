@@ -287,7 +287,7 @@ class RobertaHubInterface(nn.Module):
         extra_symbols_to_ignore.add(self.task.source_dictionary[self.task.source_dictionary.bos()])
 
         tot_masks = 0
-        for ii, sent in enumerate(tgt_bpe_idx):
+        for ii, sent in enumerate(targets_bpe):
             decode_noise_tokens = self.decode(sent)
             decode_noise_tokens = decode_noise_tokens.replace("<mask>", " <mask>").strip()
             K = masked_index[ii, :].sum().item()
