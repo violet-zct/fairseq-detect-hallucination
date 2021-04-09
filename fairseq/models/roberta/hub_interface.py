@@ -250,6 +250,7 @@ class RobertaHubInterface(nn.Module):
 
         text_spans = [sent.split(masked_token) for src, sent in masked_inputs]
         noised_tokens = []
+        targets_bpe = []
         for (src, _), segs in zip(masked_inputs, text_spans):
             bpe_src = self.bpe.encode(src.strip())
             bpe_tgt = ' {0} '.format(masked_token).join([self.bpe.encode(seg.rstrip()) for seg in segs])
@@ -258,7 +259,13 @@ class RobertaHubInterface(nn.Module):
                 append_eos=False,
                 add_if_not_exist=False,
             )
+            tgt_bpe_idx = self.task.source_dictionary.encode_line(
+                '<s> ' + bpe_tgt + ' </s>',
+                append_eos=False,
+                add_if_not_exist=False,
+            )
             noised_tokens.append(bpe_idx)
+            targets_bpe.append(tgt_bpe_idx)
 
         sample = self._build_sample(noised_tokens).long()
         masked_index = (sample == self.task.mask_idx)
@@ -274,18 +281,18 @@ class RobertaHubInterface(nn.Module):
         prob = features.softmax(dim=-1)
         # values, index = prob.topk(k=topk, dim=-1)
         values, index = prob.max(dim=-1)
-        print(prob.size())
-        index = index.squeeze(-1)  # B x T
+        index = index.squeeze(-1)  # K
         extra_symbols_to_ignore = set([])
         extra_symbols_to_ignore.add(self.task.source_dictionary[self.task.source_dictionary.eos()])
         extra_symbols_to_ignore.add(self.task.source_dictionary[self.task.source_dictionary.bos()])
 
-        torch.cuda.empty_cache()
-        for ii, sent in enumerate(noised_tokens):
+        tot_masks = 0
+        for ii, sent in enumerate(tgt_bpe_idx):
             decode_noise_tokens = self.decode(sent)
             decode_noise_tokens = decode_noise_tokens.replace("<mask>", " <mask>").strip()
-            mask = masked_index[ii, :]
-            topk_predictions = index[ii][mask]
+            K = masked_index[ii, :].sum().item()
+            topk_predictions = index[tot_masks : tot_masks+K]
+            tot_masks += K
             assert len(topk_predictions) == decode_noise_tokens.split(" ").count('<mask>')
             output = []
             mask_count = 0
