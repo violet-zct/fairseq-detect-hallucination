@@ -244,12 +244,26 @@ class RobertaHubInterface(nn.Module):
         else:
             return predictions, hallucination_probs
 
-    def fill_noised_mask(self, inputs: List[str], topk=1):
+    def fill_noised_mask(self, masked_inputs: List[str], topk=1):
+        masked_token = '<mask>'
         noises, topk_opt = [], []
-        noised_tokens = [self.encode(input)[0] for input in inputs]
+
+        text_spans = [sent.split(masked_token) for sent in masked_inputs]
+        noised_tokens = []
+        for segs in text_spans:
+            bpe_sent = ' {0} '.format(masked_token).join([self.bpe.encode(seg.rstrip()) for seg in segs])
+            bpe_idx = self.task.source_dictionary.encode_line(
+                '<s> ' + bpe_sent + ' </s>',
+                append_eos=False,
+                add_if_not_exist=False,
+            )
+            noised_tokens.append(bpe_idx)
+
         sample = self._build_sample(noised_tokens)
         sample = sample['net_input']['src_tokens']
         masked_index = (sample == self.task.mask_idx)
+        print(masked_index)
+        print(masked_inputs)
 
         with utils.eval(self.model):
             # features: B x T x |V|
