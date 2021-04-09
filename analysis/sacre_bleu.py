@@ -12,4 +12,5 @@ with open(fref, "r", encoding="utf-8") as fin_ref, open(fsys, "r", encoding="utf
         refs.append([lref.strip()])
         sys.append(lsys.strip())
 
-print(sacrebleu.corpus_bleu(sys, refs).score)
+bleu = sacrebleu.corpus_bleu(sys, refs)
+print(bleu.score)

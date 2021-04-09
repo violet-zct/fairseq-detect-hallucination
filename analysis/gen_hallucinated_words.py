@@ -77,7 +77,7 @@ for model in models:
     xlmr.eval()
     max_positions = xlmr.model.max_positions()
 
-    for use_ref in [0, 1]:
+    for use_ref in [0,]:
         print(f"use ref = {use_ref}")
 
         for prefix, test_dir in zip(test_prefix, test_dirs):
