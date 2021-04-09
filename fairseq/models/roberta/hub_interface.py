@@ -259,11 +259,8 @@ class RobertaHubInterface(nn.Module):
             )
             noised_tokens.append(bpe_idx)
 
-        sample = self._build_sample(noised_tokens)
-        sample = sample['net_input']['src_tokens']
+        sample = self._build_sample(noised_tokens).long()
         masked_index = (sample == self.task.mask_idx)
-        print(masked_index)
-        print(masked_inputs)
 
         with utils.eval(self.model):
             # features: B x T x |V|
@@ -280,8 +277,10 @@ class RobertaHubInterface(nn.Module):
         extra_symbols_to_ignore.add(self.task.source_dictionary[self.task.source_dictionary.eos()])
         extra_symbols_to_ignore.add(self.task.source_dictionary[self.task.source_dictionary.bos()])
 
+        torch.cuda.empty_cache()
         for ii, sent in enumerate(noised_tokens):
             decode_noise_tokens = self.decode(sent)
+            decode_noise_tokens = decode_noise_tokens.replace("<mask>", " <mask>").strip()
             mask = masked_index[ii, :]
             topk_predictions = index[ii][mask]
             assert len(topk_predictions) == decode_noise_tokens.split(" ").count('<mask>')
