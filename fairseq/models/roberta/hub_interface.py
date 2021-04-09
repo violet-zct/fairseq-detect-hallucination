@@ -248,12 +248,13 @@ class RobertaHubInterface(nn.Module):
         masked_token = '<mask>'
         noises, topk_opt = [], []
 
-        text_spans = [sent.split(masked_token) for sent in masked_inputs]
+        text_spans = [sent.split(masked_token) for src, sent in masked_inputs]
         noised_tokens = []
-        for segs in text_spans:
-            bpe_sent = ' {0} '.format(masked_token).join([self.bpe.encode(seg.rstrip()) for seg in segs])
+        for (src, _), segs in zip(masked_inputs, text_spans):
+            bpe_src = self.bpe.encode(src.strip())
+            bpe_tgt = ' {0} '.format(masked_token).join([self.bpe.encode(seg.rstrip()) for seg in segs])
             bpe_idx = self.task.source_dictionary.encode_line(
-                '<s> ' + bpe_sent + ' </s>',
+                '<s> ' + bpe_src + ' </s> </s> ' + bpe_tgt + ' </s>',
                 append_eos=False,
                 add_if_not_exist=False,
             )
@@ -268,10 +269,12 @@ class RobertaHubInterface(nn.Module):
                 sample,
                 features_only=False,
                 return_all_hiddens=False,
+                masked_tokens=masked_index
             )
         prob = features.softmax(dim=-1)
         # values, index = prob.topk(k=topk, dim=-1)
         values, index = prob.max(dim=-1)
+        print(prob.size())
         index = index.squeeze(-1)  # B x T
         extra_symbols_to_ignore = set([])
         extra_symbols_to_ignore.add(self.task.source_dictionary[self.task.source_dictionary.eos()])
