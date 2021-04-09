@@ -153,7 +153,8 @@ for model in models:
                     new_prediction_labels.extend(token_prediction_labels)
                 prediction_label = np.array(new_prediction_labels)
 
-                fixed_tokens, _ = xlmr.fill_noised_mask(masked_batch)
+                with torch.no_grad():
+                    fixed_tokens, _ = xlmr.fill_noised_mask(masked_batch)
                 for ss in fixed_tokens:
                     ffix.write(ss + "\n")
 
