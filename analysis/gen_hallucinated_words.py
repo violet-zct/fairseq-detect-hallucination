@@ -153,6 +153,10 @@ for model in models:
                     new_prediction_labels.extend(token_prediction_labels)
                 prediction_label = np.array(new_prediction_labels)
 
+                fixed_tokens, _ = xlmr.fill_noised_mask(masked_batch)
+                for ss in fixed_tokens:
+                    ffix.write(ss + "\n")
+
                 assert len(prediction_label) == len(target)
                 nh_correct += sum([1 for p, t in zip(prediction_label, target) if p == 1 and t == 1])
                 recall_total += sum(target == 1)
@@ -163,10 +167,6 @@ for model in models:
 
                 if count > 0 and count % 100 == 0:
                     print("Processed {} lines!".format(count))
-
-            fixed_tokens, _ = xlmr.fill_noised_mask(masked_batch)
-            for ss in fixed_tokens:
-                ffix.write(ss + "\n")
 
             acc = float(ncorrect)/float(nsamples)
             recall = float(nh_correct)/float(recall_total)
