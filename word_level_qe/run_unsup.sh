@@ -18,7 +18,7 @@ ROOT=/home/chuntinz/tir5/pretrain_models/xlmr.large #todo
 datadir=/home/chuntinz/tir5/data/qe_wmt18_ende/data2/bart_gen  #todo
 DATABIN=${datadir}/combine_unsup/bin  #todo
 # path to the save directory
-SAVE=checkpoints/31_unsup_combine_with_ref_upweight_pos_labels_mask_lm_0.5  #todo
+SAVE=checkpoints/unsup  #todo
 
 rm -rf ${SAVE}
 mkdir -p ${SAVE}

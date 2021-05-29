@@ -90,6 +90,18 @@ def collate(
     if prev_output_tokens is not None:
         batch['net_input']['prev_output_tokens'] = prev_output_tokens
 
+    if samples[0].get('target_labels', None) is not None:
+        labels = [s['target_labels'] for s in samples]
+        labels = data_utils.collate_tokens(labels, 1)
+        labels = labels.index_select(0, sort_order)
+        batch['target_labels'] = labels
+
+    if samples[0].get('source_labels', None) is not None:
+        labels = [s['source_labels'] for s in samples]
+        labels = data_utils.collate_tokens(labels, 1)
+        labels = labels.index_select(0, sort_order)
+        batch['source_labels'] = labels
+
     if samples[0].get('alignment', None) is not None:
         bsz, tgt_sz = batch['target'].shape
         src_sz = batch['net_input']['src_tokens'].shape[1]
@@ -159,7 +171,8 @@ class LanguagePairDataset(FairseqDataset):
         shuffle=True, input_feeding=True,
         remove_eos_from_source=False, append_eos_to_target=False,
         align_dataset=None,
-        append_bos=False, eos=None
+        append_bos=False, eos=None,
+        source_label_dataset=None, target_label_dataset=None,
     ):
         if tgt_dict is not None:
             assert src_dict.pad() == tgt_dict.pad()
@@ -171,6 +184,7 @@ class LanguagePairDataset(FairseqDataset):
         self.tgt = tgt
         self.src_sizes = np.array(src_sizes)
         self.tgt_sizes = np.array(tgt_sizes) if tgt_sizes is not None else None
+        self.sizes = np.vstack((self.src_sizes, self.tgt_sizes)).T if self.tgt_sizes is not None else self.src_sizes
         self.src_dict = src_dict
         self.tgt_dict = tgt_dict
         self.left_pad_source = left_pad_source
@@ -186,6 +200,9 @@ class LanguagePairDataset(FairseqDataset):
             assert self.tgt_sizes is not None, "Both source and target needed when alignments are provided"
         self.append_bos = append_bos
         self.eos = (eos if eos is not None else src_dict.eos())
+
+        self.source_label_dataset = source_label_dataset
+        self.target_label_dataset = target_label_dataset
 
     def __getitem__(self, index):
         tgt_item = self.tgt[index] if self.tgt is not None else None
@@ -220,6 +237,12 @@ class LanguagePairDataset(FairseqDataset):
         }
         if self.align_dataset is not None:
             example['alignment'] = self.align_dataset[index]
+
+        if self.source_label_dataset is not None:
+            example['source_labels'] = self.source_label_dataset[index]
+        if self.target_label_dataset is not None:
+            example['target_labels'] = self.target_label_dataset[index]
+
         return example
 
     def __len__(self):

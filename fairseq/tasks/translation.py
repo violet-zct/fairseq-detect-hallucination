@@ -8,7 +8,7 @@ import json
 import itertools
 import logging
 import os
-
+import torch
 import numpy as np
 
 from fairseq import metrics, options, utils
@@ -22,6 +22,7 @@ from fairseq.data import (
     PrependTokenDataset,
     StripTokenDataset,
     TruncateDataset,
+    RawLabelDataset,
 )
 
 from fairseq.tasks import FairseqTask, register_task
@@ -39,7 +40,8 @@ def load_langpair_dataset(
     combine, dataset_impl, upsample_primary,
     left_pad_source, left_pad_target, max_source_positions,
     max_target_positions, prepend_bos=False, load_alignments=False,
-    truncate_source=False, append_source_id=False
+    truncate_source=False, append_source_id=False,
+    source_label_dataset=None, target_label_dataset=None,
 ):
 
     def split_exists(split, src, tgt, lang, data_path):
@@ -126,7 +128,9 @@ def load_langpair_dataset(
         left_pad_target=left_pad_target,
         max_source_positions=max_source_positions,
         max_target_positions=max_target_positions,
-        align_dataset=align_dataset, eos=eos
+        align_dataset=align_dataset, eos=eos,
+        source_label_dataset=source_label_dataset,
+        target_label_dataset=target_label_dataset
     )
 
 
@@ -196,6 +200,11 @@ class TranslationTask(FairseqTask):
                                  'e.g., \'{"beam": 4, "lenpen": 0.6}\'')
         parser.add_argument('--eval-bleu-print-samples', action='store_true',
                             help='print sample generations during validation')
+
+        parser.add_argument('--source-hal-label-path', type=str, default=None)
+        parser.add_argument('--target-hal-label-path', type=str, default=None)
+        parser.add_argument('--st-data-path', type=str, default=None)
+        parser.add_argument('--bt-data-path', type=str, default=None)
         # fmt: on
 
     def __init__(self, args, src_dict, tgt_dict):
@@ -245,17 +254,53 @@ class TranslationTask(FairseqTask):
         # infer langcode
         src, tgt = self.args.source_lang, self.args.target_lang
 
-        self.datasets[split] = load_langpair_dataset(
-            data_path, split, src, self.src_dict, tgt, self.tgt_dict,
-            combine=combine, dataset_impl=self.args.dataset_impl,
-            upsample_primary=self.args.upsample_primary,
-            left_pad_source=self.args.left_pad_source,
-            left_pad_target=self.args.left_pad_target,
-            max_source_positions=self.args.max_source_positions,
-            max_target_positions=self.args.max_target_positions,
-            load_alignments=self.args.load_alignments,
-            truncate_source=self.args.truncate_source,
-        )
+        def load_label(path, label_name):
+            if label_name is None:
+                return None
+            path = os.path.join(path, label_name)
+            labels = []
+            for line in open(path).readlines():
+                labels.append(torch.FloatTensor([int(label.strip()) for label in line.strip().split()]))
+            label_dataset = RawLabelDataset(labels)
+            return label_dataset
+
+        def load_dataset(path, source_label_dataset, target_label_dataset):
+            dataset = load_langpair_dataset(
+                path, split, src, self.src_dict, tgt, self.tgt_dict,
+                combine=combine, dataset_impl=self.args.dataset_impl,
+                upsample_primary=self.args.upsample_primary,
+                left_pad_source=self.args.left_pad_source,
+                left_pad_target=self.args.left_pad_target,
+                max_source_positions=self.args.max_source_positions,
+                max_target_positions=self.args.max_target_positions,
+                load_alignments=self.args.load_alignments,
+                truncate_source=self.args.truncate_source,
+                source_label_dataset=source_label_dataset,
+                target_label_dataset=target_label_dataset
+            )
+            return dataset
+
+        if split == "train":
+            target_label_dataset = load_label(data_path, self.args.target_hal_label_path)
+            source_label_dataset = load_label(data_path, self.args.source_hal_label_path)
+            main_dataset = load_dataset(data_path, source_label_dataset, target_label_dataset)
+            datasets = [main_dataset]
+            if self.args.st_data_path is not None:
+                target_label_dataset = load_label(self.args.st_data_path, self.args.target_hal_label_path)
+                source_label_dataset = load_label(self.args.st_data_path, self.args.source_hal_label_path)
+                datasets.append(load_dataset(self.args.st_data_path, source_label_dataset, target_label_dataset))
+            if self.args.bt_data_path is not None:
+                target_label_dataset = load_label(self.args.bt_data_path, self.args.target_hal_label_path)
+                source_label_dataset = load_label(self.args.bt_data_path, self.args.source_hal_label_path)
+                datasets.append(load_dataset(self.args.bt_data_path, source_label_dataset, target_label_dataset))
+            if len(datasets) == 1:
+                self.datasets[split] = datasets[0]
+            else:
+                sample_ratios = [1] * len(datasets)
+                sample_ratios[0] = self.args.upsample_primary
+                self.datasets[split] = ConcatDataset(datasets, sample_ratios)
+        else:
+            self.datasets[split] = load_dataset(data_path, None, None)
 
     def build_dataset_for_inference(self, src_tokens, src_lengths):
         return LanguagePairDataset(src_tokens, src_lengths, self.source_dictionary)

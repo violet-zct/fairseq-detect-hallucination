@@ -4,7 +4,7 @@
 #wget -N 'https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/vocab.bpe'
 #wget -N 'https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/dict.txt'
 
-source activate py37
+#source activate py37
 
 INPUT=$1
 OUTPUT=$2
