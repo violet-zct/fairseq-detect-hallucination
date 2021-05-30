@@ -108,3 +108,6 @@ You can download our trained models for these benchmark datasets for [zhen-MT](h
 To simply use the trained model for hallucination prediction for your own input, we provide an example script `./util_scripts/predict_hallucination_mt.py`
 that predicts labels for a hypothesis file conditioned on its source file.
 Again, please specify the path to your input files, the trained model, the training data and the output directory in `Line 12-23`, and then run it.
+
+## Scripts for Word-level Quality Estimation
+The directory `word_level_qe/` contains scripts for both supervised and unsupervised experiments for word-level quality estimation from the [WMT18 shared task](http://www.statmt.org/wmt18/quality-estimation-task.html) (task 2 of QE). 
