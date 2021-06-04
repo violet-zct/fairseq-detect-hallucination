@@ -113,7 +113,7 @@ Again, please specify the path to your input files, the trained model, the train
 The directory `word_level_qe/` contains scripts for both supervised and unsupervised experiments for word-level quality estimation from the [WMT18 shared task](http://www.statmt.org/wmt18/quality-estimation-task.html) (task 2 of QE). 
 
 ## Reference
-'''
+```
 @inproceedings{zhou21aclfindings,
     title = {Detecting Hallucinated Content in Conditional Neural Sequence Generation},
     author = {Chunting Zhou and Graham Neubig and Jiatao Gu and Mona Diab and Francisco Guzmán and Luke Zettlemoyer and Marjan Ghazvininejad},
@@ -123,4 +123,4 @@ The directory `word_level_qe/` contains scripts for both supervised and unsuperv
     url = {https://arxiv.org/abs/2011.02593},
     year = {2021}
 }
-'''
+```
