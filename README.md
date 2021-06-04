@@ -1,9 +1,9 @@
 # Detecting Hallucinated Content in Conditional Neural Sequence Generation
-This repository contains codes for running hallucination detection from the following [paper](https://openreview.net/forum?id=Jq8JGA89sDa).
+This repository contains codes for running hallucination detection from the following [paper](https://arxiv.org/abs/2011.02593).
 ```
 Detecting Hallucinated Content in Conditional Neural Sequence Generation
-Chunting Zhou, Jiatao Gu, Mona Diab, Paco Guzman, Luke Zettlemoyer, Marjan Ghazvininejad
-Under review for ICLR 2021
+Chunting Zhou, Graham Neubig, Jiatao Gu, Mona Diab, Paco Guzman, Luke Zettlemoyer, Marjan Ghazvininejad
+ACL-Finding 2021
 ```
 <br>
 
