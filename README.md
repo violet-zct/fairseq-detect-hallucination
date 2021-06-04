@@ -111,3 +111,16 @@ Again, please specify the path to your input files, the trained model, the train
 
 ## Scripts for Word-level Quality Estimation
 The directory `word_level_qe/` contains scripts for both supervised and unsupervised experiments for word-level quality estimation from the [WMT18 shared task](http://www.statmt.org/wmt18/quality-estimation-task.html) (task 2 of QE). 
+
+## Reference
+'''
+@inproceedings{zhou21aclfindings,
+    title = {Detecting Hallucinated Content in Conditional Neural Sequence Generation},
+    author = {Chunting Zhou and Graham Neubig and Jiatao Gu and Mona Diab and Francisco Guzmán and Luke Zettlemoyer and Marjan Ghazvininejad},
+    booktitle = {Findings of the Joint Conference of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing (ACL-IJCNLP Findings)},
+    address = {Virtual},
+    month = {August},
+    url = {https://arxiv.org/abs/2011.02593},
+    year = {2021}
+}
+'''
