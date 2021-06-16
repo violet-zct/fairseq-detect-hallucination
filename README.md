@@ -11,7 +11,7 @@ ACL-Finding 2021
 <br>
 
 ## Requirement
-- This repo is based on [fairseq](https://github.com/pytorch/fairseq) 
+- This repo is based on [fairseq](https://github.com/pytorch/fairseq) (tag [v0.7.0](https://github.com/pytorch/fairseq/releases/tag/v0.7.0))
 (please follow the instructions in the fairseq repo for requirements on apex, Python and Pytorch version.)
 
 Under your anoconda environment, please install fairseq from source locally with:
