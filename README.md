@@ -48,7 +48,7 @@ This is decomposed into the following two sub-steps.
   You can tune the hyperparameters for generating noised data at the top of `./util_scripts/run_gen_synthetic_data_with_bart.sh`, then run the following command.
   The set of noise hyperparameters will be used to name the output, namely `config`.
 
-  Please first download the BART (for English, [here](https://github.com/pytorch/fairseq/tree/master/examples/bart)) or MBART (for other languages, [here](https://github.com/pytorch/fairseq/tree/master/examples/mbart)) model
+  Please first download the BART (for English, [here](https://github.com/pytorch/fairseq/tree/master/examples/bart)) or MBART (for other languages, [here](https://www.dropbox.com/sh/rf1yx5ic1rmprbq/AACPGueHCjJpGj_1VS-I03PYa?dl=0), we noticed that the MBART model released in fairseq is broken) model
 and then specify the path to model and bpe dictionary in `Line 33-45` of `./util_scripts/gen_bart_batch.py`.
   Then run the following command:
   ```commandline
