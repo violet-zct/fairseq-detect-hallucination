@@ -1,9 +1,9 @@
 # Detecting Hallucinated Content in Conditional Neural Sequence Generation
-This repository contains codes for running hallucination detection from the following [paper](https://openreview.net/forum?id=Jq8JGA89sDa).
+This repository contains codes for running hallucination detection from the following [paper](https://arxiv.org/abs/2011.02593).
 ```
 Detecting Hallucinated Content in Conditional Neural Sequence Generation
-Chunting Zhou, Jiatao Gu, Mona Diab, Paco Guzman, Luke Zettlemoyer, Marjan Ghazvininejad
-Under review for ICLR 2021
+Chunting Zhou, Graham Neubig, Jiatao Gu, Mona Diab, Paco Guzman, Luke Zettlemoyer, Marjan Ghazvininejad
+ACL-Finding 2021
 ```
 <br>
 
@@ -11,7 +11,7 @@ Under review for ICLR 2021
 <br>
 
 ## Requirement
-- This repo is based on [fairseq](https://github.com/pytorch/fairseq) 
+- This repo is based on [fairseq](https://github.com/pytorch/fairseq) (tag [v0.9.0](https://github.com/pytorch/fairseq/releases/tag/v0.9.0))
 (please follow the instructions in the fairseq repo for requirements on apex, Python and Pytorch version.)
 
 Under your anoconda environment, please install fairseq from source locally with:
@@ -48,7 +48,7 @@ This is decomposed into the following two sub-steps.
   You can tune the hyperparameters for generating noised data at the top of `./util_scripts/run_gen_synthetic_data_with_bart.sh`, then run the following command.
   The set of noise hyperparameters will be used to name the output, namely `config`.
 
-  Please first download the BART (for English, [here](https://github.com/pytorch/fairseq/tree/master/examples/bart)) or MBART (for other languages, [here](https://github.com/pytorch/fairseq/tree/master/examples/mbart)) model
+  Please first download the BART (for English, [here](https://github.com/pytorch/fairseq/tree/master/examples/bart)) or MBART (for other languages, [here](https://www.dropbox.com/sh/rf1yx5ic1rmprbq/AACPGueHCjJpGj_1VS-I03PYa?dl=0), we noticed that the MBART model released in fairseq is broken) model
 and then specify the path to model and bpe dictionary in `Line 33-45` of `./util_scripts/gen_bart_batch.py`.
   Then run the following command:
   ```commandline
@@ -111,3 +111,16 @@ Again, please specify the path to your input files, the trained model, the train
 
 ## Scripts for Word-level Quality Estimation
 The directory `word_level_qe/` contains scripts for both supervised and unsupervised experiments for word-level quality estimation from the [WMT18 shared task](http://www.statmt.org/wmt18/quality-estimation-task.html) (task 2 of QE). 
+
+## Reference
+```
+@inproceedings{zhou21aclfindings,
+    title = {Detecting Hallucinated Content in Conditional Neural Sequence Generation},
+    author = {Chunting Zhou and Graham Neubig and Jiatao Gu and Mona Diab and Francisco Guzmán and Luke Zettlemoyer and Marjan Ghazvininejad},
+    booktitle = {Findings of the Joint Conference of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing (ACL-IJCNLP Findings)},
+    address = {Virtual},
+    month = {August},
+    url = {https://arxiv.org/abs/2011.02593},
+    year = {2021}
+}
+```
